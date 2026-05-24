@@ -2,11 +2,18 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ProductGrid } from '@/components/product/product-grid'
 import { fetchProductsSSG } from '@/lib/api/products'
+import type { Product } from '@/types/product'
 
 export const revalidate = 3600
 
 export default async function HomePage() {
-  const { products } = await fetchProductsSSG()
+  let products: Product[] = []
+  try {
+    const data = await fetchProductsSSG()
+    products = data.products
+  } catch {
+    // Backend unavailable at build time; page hydrates with empty featured list
+  }
   const featured = products.slice(0, 4)
 
   return (
