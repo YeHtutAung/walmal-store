@@ -27,7 +27,7 @@ export function SiteHeader() {
           {isAuthenticated ? (
             <>
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/account">Hi, {user?.name.split(' ')[0]}</Link>
+                <Link href="/account">Hi, {user?.username}</Link>
               </Button>
               <Button variant="outline" size="sm" onClick={logout}>
                 Sign out

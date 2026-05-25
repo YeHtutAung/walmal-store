@@ -14,9 +14,8 @@ import type { OrderSummary } from '@/types/order'
 
 const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive'> = {
   PENDING: 'secondary',
-  PAID: 'default',
-  SHIPPED: 'default',
-  DELIVERED: 'default',
+  CONFIRMED: 'default',
+  FULFILLED: 'default',
   CANCELLED: 'destructive',
 }
 
@@ -38,7 +37,7 @@ export default function AccountPage() {
       <main className="container mx-auto flex-1 px-4 py-8 space-y-8">
         <div>
           <h1 className="text-3xl font-bold">My account</h1>
-          <p className="text-muted-foreground">{user?.email}</p>
+          <p className="text-muted-foreground">@{user?.username}</p>
         </div>
 
         <section>
@@ -59,11 +58,11 @@ export default function AccountPage() {
                         Order #{order.id.slice(-8).toUpperCase()}
                       </Link>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(order.createdAt).toLocaleDateString()} · {order.itemCount} items
+                        {new Date(order.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="font-medium">{formatPrice(order.total)}</span>
+                      <span className="font-medium">{formatPrice(order.totalAmount, order.currency)}</span>
                       <Badge variant={STATUS_VARIANT[order.status] ?? 'default'}>
                         {order.status}
                       </Badge>

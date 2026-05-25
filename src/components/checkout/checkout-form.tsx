@@ -12,7 +12,7 @@ import { GuestFields } from './guest-fields'
 import { StripePayment } from './stripe-payment'
 import { useAuth } from '@/hooks/use-auth'
 import { useCart } from '@/hooks/use-cart'
-import { createOrder } from '@/lib/api/orders'
+import { createOrder, fetchDefaultLocationId } from '@/lib/api/orders'
 import { formatPrice } from '@/lib/utils'
 import type { ShippingAddress } from '@/types/order'
 
@@ -31,7 +31,7 @@ export function CheckoutForm() {
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [guestEmail, setGuestEmail] = useState('')
   const [address, setAddress] = useState<Partial<ShippingAddress>>({})
-  const [failedPaymentIntentId, setFailedPaymentIntentId] = useState<string | null>(null)
+  const [failedOrderRef, setFailedOrderRef] = useState<string | null>(null)
 
   const isAuthenticated = authStatus === 'authenticated'
 
@@ -46,7 +46,8 @@ export function CheckoutForm() {
       const res = await fetch('/api/payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: subtotal, currency: 'usd' }),
+        // Stripe expects amount in cents; prices are decimal
+        body: JSON.stringify({ amount: Math.round(subtotal * 100), currency: 'usd' }),
       })
       const data = await res.json()
       setClientSecret(data.clientSecret)
@@ -59,23 +60,20 @@ export function CheckoutForm() {
   async function handlePaymentSuccess(paymentIntentId: string) {
     setCheckoutStatus('processing')
     try {
+      const locationId = await fetchDefaultLocationId()
       const { orderId } = await createOrder({
-        paymentIntentId,
+        currency: 'USD',
         items: items.map((i) => ({
           variantId: i.variantId,
-          productName: i.productName,
-          variantName: i.variantName,
-          price: i.price,
+          locationId,
           quantity: i.quantity,
-          imageUrl: i.imageUrl,
         })),
         shippingAddress: address as ShippingAddress,
-        guestEmail: mode === 'guest' ? guestEmail : undefined,
       })
       clearCart()
       router.push(`/order-confirmation?id=${orderId}`)
     } catch {
-      setFailedPaymentIntentId(paymentIntentId)
+      setFailedOrderRef(paymentIntentId)
       setCheckoutStatus('order-failed')
     }
   }
@@ -109,7 +107,7 @@ export function CheckoutForm() {
         <h2 className="text-xl font-semibold text-destructive">Payment received — order not created</h2>
         <p className="text-muted-foreground">
           Your card was charged but we couldn&apos;t record your order. Please contact support with
-          reference: <code className="font-mono text-sm">{failedPaymentIntentId}</code>
+          reference: <code className="font-mono text-sm">{failedOrderRef}</code>
         </p>
         <Button variant="outline" asChild>
           <a href="mailto:support@walmal.com">Contact support</a>
@@ -129,7 +127,7 @@ export function CheckoutForm() {
           <GuestFields email={guestEmail} onChange={setGuestEmail} />
         )}
         {isAuthenticated && (
-          <p className="text-sm text-muted-foreground">Ordering as {user?.email}</p>
+          <p className="text-sm text-muted-foreground">Ordering as {user?.username}</p>
         )}
 
         <AddressForm value={address} onChange={setAddress} />

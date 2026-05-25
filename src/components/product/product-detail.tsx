@@ -10,9 +10,10 @@ import type { Product, ProductVariant } from '@/types/product'
 
 interface ProductDetailProps {
   product: Product
+  variants: ProductVariant[]
 }
 
-export function ProductDetail({ product }: ProductDetailProps) {
+export function ProductDetail({ product, variants }: ProductDetailProps) {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null)
   const [added, setAdded] = useState(false)
   const { addItem } = useCart()
@@ -20,12 +21,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
   function handleAddToCart() {
     if (!selectedVariant) return
     addItem({
-      variantId: selectedVariant.id,
+      variantId: selectedVariant.variantId,
       productName: product.name,
-      variantName: selectedVariant.name,
-      price: selectedVariant.price,
+      variantName: [selectedVariant.name, selectedVariant.color, selectedVariant.size].filter(Boolean).join(' · ') || selectedVariant.sku,
+      price: product.lowestPrice ?? 0,
       quantity: 1,
-      imageUrl: selectedVariant.imageUrl || product.imageUrl,
+      imageUrl: product.primaryImageUrl ?? '',
     })
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
@@ -33,38 +34,47 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
-      <div className="relative aspect-square overflow-hidden rounded-lg">
-        <Image
-          src={selectedVariant?.imageUrl || product.imageUrl}
-          alt={product.name}
-          fill
-          className="object-cover"
-          priority
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
+      <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
+        {product.primaryImageUrl ? (
+          <Image
+            src={product.primaryImageUrl}
+            alt={product.name}
+            fill
+            className="object-cover"
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-muted-foreground">No image</div>
+        )}
       </div>
 
       <div className="space-y-6">
         <div>
-          <p className="text-sm text-muted-foreground">{product.category}</p>
+          {product.brand && <p className="text-sm text-muted-foreground">{product.brand}</p>}
+          {product.categoryName && <p className="text-xs text-muted-foreground">{product.categoryName}</p>}
           <h1 className="mt-1 text-3xl font-bold">{product.name}</h1>
-          {selectedVariant && (
-            <p className="mt-2 text-2xl font-semibold">{formatPrice(selectedVariant.price)}</p>
+          {product.lowestPrice != null && (
+            <p className="mt-2 text-2xl font-semibold">
+              {formatPrice(product.lowestPrice, product.currency)}
+            </p>
           )}
         </div>
 
-        <p className="text-muted-foreground">{product.description}</p>
+        {product.description && (
+          <p className="text-muted-foreground">{product.description}</p>
+        )}
 
         <VariantSelector
-          variants={product.variants}
-          selectedId={selectedVariant?.id ?? null}
+          variants={variants}
+          selectedId={selectedVariant?.variantId ?? null}
           onSelect={setSelectedVariant}
         />
 
         <Button
           size="lg"
           className="w-full"
-          disabled={!selectedVariant || selectedVariant.stock === 0}
+          disabled={!selectedVariant}
           onClick={handleAddToCart}
         >
           {added ? 'Added to cart!' : 'Add to cart'}

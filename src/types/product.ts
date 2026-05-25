@@ -1,24 +1,28 @@
 export interface ProductVariant {
-  id: string
-  name: string
-  price: number
-  stock: number
-  imageUrl: string
+  variantId: string
+  productId: string
+  sku: string
+  name?: string
+  color?: string
+  size?: string
+  status: 'ACTIVE' | 'INACTIVE'
 }
 
 export interface Product {
-  id: string
-  slug: string
+  productId: string
   name: string
-  description: string
-  category: string
-  imageUrl: string
-  variants: ProductVariant[]
+  slug: string
+  brand?: string
+  description?: string
+  primaryImageUrl?: string
+  lowestPrice?: number
+  currency?: string
+  categoryName?: string
+  variants?: ProductVariant[]
 }
 
 export interface ProductListResponse {
   products: Product[]
   total: number
-  page: number
-  pageSize: number
+  totalPages: number
 }

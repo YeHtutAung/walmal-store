@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { SiteHeader } from '@/components/layout/site-header'
 import { SiteFooter } from '@/components/layout/site-footer'
@@ -54,18 +53,13 @@ export default function OrderDetailPage() {
               <h2 className="mb-4 font-semibold">Items</h2>
               <div className="space-y-4 divide-y">
                 {order.items.map((item) => (
-                  <div key={item.variantId} className="flex gap-4 pt-4 first:pt-0">
-                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border">
-                      <Image src={item.imageUrl} alt={item.productName} fill className="object-cover" />
+                  <div key={item.variantId} className="flex justify-between pt-4 first:pt-0">
+                    <div>
+                      <p className="font-medium">{item.productNameSnapshot}</p>
+                      <p className="text-sm text-muted-foreground">{item.skuSnapshot}</p>
+                      <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                     </div>
-                    <div className="flex flex-1 justify-between">
-                      <div>
-                        <p className="font-medium">{item.productName}</p>
-                        <p className="text-sm text-muted-foreground">{item.variantName}</p>
-                        <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                      </div>
-                      <span className="font-medium">{formatPrice(item.price * item.quantity)}</span>
-                    </div>
+                    <span className="font-medium">{formatPrice(item.subtotal, item.currency)}</span>
                   </div>
                 ))}
               </div>
@@ -75,7 +69,7 @@ export default function OrderDetailPage() {
 
             <div className="flex justify-between font-semibold text-lg">
               <span>Total</span>
-              <span>{formatPrice(order.total)}</span>
+              <span>{formatPrice(order.totalAmount, order.currency)}</span>
             </div>
 
             <section>
@@ -83,7 +77,7 @@ export default function OrderDetailPage() {
               <address className="not-italic text-sm text-muted-foreground">
                 {order.shippingAddress.line1}<br />
                 {order.shippingAddress.line2 && <>{order.shippingAddress.line2}<br /></>}
-                {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode}<br />
+                {order.shippingAddress.city} {order.shippingAddress.postalCode}<br />
                 {order.shippingAddress.country}
               </address>
             </section>

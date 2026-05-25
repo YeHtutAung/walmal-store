@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ProductGrid } from '@/components/product/product-grid'
-import { apiClient } from '@/lib/api/client'
+import { fetchProducts } from '@/lib/api/products'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -16,9 +16,8 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const category = searchParams.get('category') ?? undefined
-  const sort = searchParams.get('sort') ?? undefined
-  const page = searchParams.get('page') ?? '1'
+  const search = searchParams.get('q') ?? ''
+  const page = Number(searchParams.get('page') ?? '1')
 
   useEffect(() => {
     if (status === 'loading') return
@@ -26,17 +25,12 @@ export default function ProductsPage() {
 
     setLoading(true)
     setError(null)
-    const params = new URLSearchParams()
-    if (category) params.set('category', category)
-    if (sort) params.set('sort', sort)
-    params.set('page', page)
 
-    apiClient
-      .get<ProductListResponse>(`/products?${params}`)
-      .then((res) => setData(res.data))
+    fetchProducts({ search, page })
+      .then(setData)
       .catch((err) => setError(err?.message ?? 'Failed to load products'))
       .finally(() => setLoading(false))
-  }, [status, category, sort, page])
+  }, [status, search, page])
 
   if (status === 'guest') {
     return (
@@ -49,9 +43,7 @@ export default function ProductsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">
-        Products {category && <span className="text-muted-foreground">— {category}</span>}
-      </h1>
+      <h1 className="text-3xl font-bold mb-8">Products</h1>
       {loading && <p className="text-muted-foreground">Loading…</p>}
       {error && <p className="text-destructive">{error}</p>}
       {data && (

@@ -10,6 +10,19 @@ vi.mock('@/store/cart-store', () => ({
   useCartStore: { getState: vi.fn(() => ({ clearCart: vi.fn() })) },
 }))
 
+// JWT with role=CUSTOMER, sub=1, username=alice
+const CUSTOMER_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQ1VTVE9NRVIiLCJzdWIiOiIxIiwidXNlcm5hbWUiOiJhbGljZSJ9.sig'
+// JWT with role=ADMIN
+const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiIyIiwidXNlcm5hbWUiOiJhZG1pbiJ9.sig'
+
+const makeAuthResponse = (accessToken: string) => ({
+  accessToken,
+  refreshToken: 'refresh-tok',
+  tokenType: 'Bearer',
+  expiresIn: 900,
+  role: 'CUSTOMER',
+})
+
 describe('auth-store', () => {
   beforeEach(async () => {
     vi.resetModules()
@@ -27,24 +40,18 @@ describe('auth-store', () => {
 
   it('sets authenticated state on successful login', async () => {
     const { loginApi } = await import('@/lib/api/auth')
-    vi.mocked(loginApi).mockResolvedValueOnce({
-      token: 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQ1VTVE9NRVIiLCJzdWIiOiIxIn0.sig',
-      user: { id: '1', email: 'a@b.com', name: 'Alice' },
-    })
+    vi.mocked(loginApi).mockResolvedValueOnce(makeAuthResponse(CUSTOMER_TOKEN))
     const { useAuthStore } = await import('@/store/auth-store')
-    await useAuthStore.getState().login('a@b.com', 'pass')
+    await useAuthStore.getState().login('alice', 'pass')
     expect(useAuthStore.getState().status).toBe('authenticated')
-    expect(useAuthStore.getState().user?.email).toBe('a@b.com')
+    expect(useAuthStore.getState().user?.username).toBe('alice')
   })
 
   it('rejects non-CUSTOMER role tokens', async () => {
     const { loginApi } = await import('@/lib/api/auth')
-    vi.mocked(loginApi).mockResolvedValueOnce({
-      token: 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4ifQ.sig',
-      user: { id: '2', email: 'admin@b.com', name: 'Admin' },
-    })
+    vi.mocked(loginApi).mockResolvedValueOnce(makeAuthResponse(ADMIN_TOKEN))
     const { useAuthStore } = await import('@/store/auth-store')
-    await expect(useAuthStore.getState().login('admin@b.com', 'pass')).rejects.toThrow(
+    await expect(useAuthStore.getState().login('admin', 'pass')).rejects.toThrow(
       'This store is for customers only.'
     )
     expect(useAuthStore.getState().status).toBe('guest')
@@ -54,7 +61,7 @@ describe('auth-store', () => {
     const { useAuthStore } = await import('@/store/auth-store')
     useAuthStore.setState({
       token: 'tok',
-      user: { id: '1', email: 'a@b.com', name: 'Alice' },
+      user: { id: '1', username: 'alice' },
       status: 'authenticated',
     })
     useAuthStore.getState().logout()

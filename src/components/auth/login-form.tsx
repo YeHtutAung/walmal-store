@@ -14,7 +14,7 @@ export function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { login, status } = useAuth()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
 
@@ -25,11 +25,11 @@ export function LoginForm() {
     e.preventDefault()
     setError(null)
     try {
-      await login(email, password)
+      await login(username, password)
       router.replace(next)
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.code === 'INVALID_CREDENTIALS' ? 'Invalid email or password.' : err.message)
+        setError(err.code === 'INVALID_CREDENTIALS' ? 'Invalid username or password.' : err.message)
       } else if (err instanceof Error) {
         setError(err.message)
       }
@@ -40,19 +40,19 @@ export function LoginForm() {
     <Card className="w-full max-w-sm">
       <CardHeader>
         <CardTitle>Sign in</CardTitle>
-        <CardDescription>Enter your email and password to access your account.</CardDescription>
+        <CardDescription>Enter your username and password to access your account.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="username">Username</Label>
             <Input
-              id="email"
-              type="email"
-              autoComplete="email"
+              id="username"
+              type="text"
+              autoComplete="username"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className="space-y-2">

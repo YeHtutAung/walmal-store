@@ -14,8 +14,9 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function attemptSilentRefresh() {
       try {
-        const { token, user } = await refreshTokenApi()
-        setToken(token, user)
+        const { accessToken } = await refreshTokenApi()
+        const payload = JSON.parse(atob(accessToken.split('.')[1]))
+        setToken(accessToken, { id: payload.sub, username: payload.username })
 
         try {
           const serverItems = await fetchServerCart()

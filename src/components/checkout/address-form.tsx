@@ -29,19 +29,13 @@ export function AddressForm({ value, onChange }: AddressFormProps) {
           <Input id="city" required value={value.city ?? ''} onChange={set('city')} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="state">State *</Label>
-          <Input id="state" required value={value.state ?? ''} onChange={set('state')} />
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
           <Label htmlFor="postalCode">Postal code *</Label>
           <Input id="postalCode" required value={value.postalCode ?? ''} onChange={set('postalCode')} />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="country">Country *</Label>
-          <Input id="country" required value={value.country ?? ''} onChange={set('country')} />
-        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="country">Country *</Label>
+        <Input id="country" required value={value.country ?? ''} onChange={set('country')} />
       </div>
     </div>
   )

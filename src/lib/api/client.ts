@@ -29,10 +29,13 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (res) => res,
-  (error: AxiosError<{ code?: string; message?: string }>) => {
+  (error: AxiosError<{ code?: string; message?: string; errors?: { field: string; message: string }[]; violations?: { field: string; message: string }[] }>) => {
     const status = error.response?.status ?? 0
-    const code = error.response?.data?.code ?? 'UNKNOWN'
-    const message = error.response?.data?.message ?? error.message
+    const data = error.response?.data
+    if (process.env.NODE_ENV === 'development') console.error('[API error]', status, data)
+    const code = data?.code ?? 'UNKNOWN'
+    const fieldErrors = (data?.errors ?? data?.violations ?? []).map((e) => `${e.field}: ${e.message}`).join('; ')
+    const message = fieldErrors || data?.message || error.message
 
     if (status === 401 && typeof window !== 'undefined') {
       const { useAuthStore } = require('@/store/auth-store')

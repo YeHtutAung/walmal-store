@@ -1,7 +1,6 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { formatPrice } from '@/lib/utils'
 import type { ProductVariant } from '@/types/product'
 
 interface VariantSelectorProps {
@@ -11,23 +10,28 @@ interface VariantSelectorProps {
 }
 
 export function VariantSelector({ variants, selectedId, onSelect }: VariantSelectorProps) {
+  const active = variants.filter((v) => v.status === 'ACTIVE')
+
   return (
     <div className="space-y-2">
       <p className="text-sm font-medium">Select variant</p>
       <div className="flex flex-wrap gap-2">
-        {variants.map((variant) => (
-          <Button
-            key={variant.id}
-            variant={selectedId === variant.id ? 'default' : 'outline'}
-            size="sm"
-            disabled={variant.stock === 0}
-            onClick={() => onSelect(variant)}
-          >
-            {variant.name}
-            <span className="ml-2 text-xs">{formatPrice(variant.price)}</span>
-            {variant.stock === 0 && <span className="ml-1 text-xs">(Out of stock)</span>}
-          </Button>
-        ))}
+        {active.map((variant) => {
+          const label = [variant.name, variant.color, variant.size].filter(Boolean).join(' · ') || variant.sku
+          return (
+            <Button
+              key={variant.variantId}
+              variant={selectedId === variant.variantId ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => onSelect(variant)}
+            >
+              {label}
+            </Button>
+          )
+        })}
+        {active.length === 0 && (
+          <p className="text-sm text-muted-foreground">No variants available</p>
+        )}
       </div>
     </div>
   )

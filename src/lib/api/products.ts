@@ -1,33 +1,50 @@
-import { serverFetch } from './server'
 import { apiClient } from './client'
-import type { Product, ProductListResponse } from '@/types/product'
+import type { Product, ProductListResponse, ProductVariant } from '@/types/product'
+
+interface ApiPage<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+}
+
+interface ApiResponse<T> {
+  data: T
+}
 
 export interface ProductsQuery {
-  category?: string
-  sort?: string
+  search?: string
   page?: number
+  size?: number
 }
 
-export function fetchProducts(query: ProductsQuery = {}): Promise<ProductListResponse> {
+export async function fetchProducts(query: ProductsQuery = {}): Promise<ProductListResponse> {
   const params = new URLSearchParams()
-  if (query.category) params.set('category', query.category)
-  if (query.sort) params.set('sort', query.sort)
-  if (query.page) params.set('page', String(query.page))
-  const qs = params.toString() ? `?${params}` : ''
-  return serverFetch<ProductListResponse>(`/products${qs}`, { cache: 'no-store' })
+  params.set('q', query.search ?? '')
+  params.set('page', String(query.page ? query.page - 1 : 0))
+  params.set('size', String(query.size ?? 20))
+  const res = await apiClient.get<ApiResponse<ApiPage<Product>>>(`/product/search?${params}`)
+  const page = res.data.data
+  return { products: page.content, total: page.totalElements, totalPages: page.totalPages }
 }
 
-export function fetchProduct(slug: string): Promise<Product> {
-  return serverFetch<Product>(`/products/${slug}`, { cache: 'no-store' })
+export async function fetchProduct(productId: string): Promise<Product> {
+  const res = await apiClient.get<ApiResponse<Product>>(`/product/${productId}`)
+  return res.data.data
 }
 
-export function fetchProductsSSG(): Promise<ProductListResponse> {
-  return serverFetch<ProductListResponse>('/products', {
+export async function fetchProductVariants(productId: string): Promise<ProductVariant[]> {
+  const res = await apiClient.get<ApiResponse<ProductVariant[]>>(`/product/${productId}/variants`)
+  return res.data.data
+}
+
+export async function fetchProductsSSG(): Promise<ProductListResponse> {
+  const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1'
+  const res = await fetch(`${base}/product/search?q=&page=0&size=20`, {
     next: { revalidate: 3600 },
+    headers: { 'Content-Type': 'application/json' },
   })
-}
-
-export async function fetchProductClient(slug: string): Promise<Product> {
-  const res = await apiClient.get<Product>(`/products/${slug}`)
-  return res.data
+  if (!res.ok) throw new Error('Failed to fetch products')
+  const json: ApiResponse<ApiPage<Product>> = await res.json()
+  const page = json.data
+  return { products: page.content, total: page.totalElements, totalPages: page.totalPages }
 }

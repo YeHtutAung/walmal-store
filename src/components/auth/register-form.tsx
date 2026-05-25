@@ -14,7 +14,7 @@ export function RegisterForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { register, status } = useAuth()
-  const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -26,7 +26,7 @@ export function RegisterForm() {
     e.preventDefault()
     setError(null)
     try {
-      await register(email, password, name)
+      await register(email, password, username)
       router.replace(next)
     } catch (err) {
       if (err instanceof ApiError) {
@@ -46,8 +46,8 @@ export function RegisterForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Full name</Label>
-            <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} />
+            <Label htmlFor="username">Username</Label>
+            <Input id="username" required value={username} onChange={(e) => setUsername(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>

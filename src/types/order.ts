@@ -1,45 +1,44 @@
-export type OrderStatus = 'PENDING' | 'PAID' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'FULFILLED' | 'CANCELLED'
 
 export interface ShippingAddress {
   line1: string
   line2?: string
   city: string
-  state: string
   postalCode: string
   country: string
 }
 
 export interface OrderItem {
   variantId: string
-  productName: string
-  variantName: string
-  price: number
+  productNameSnapshot: string
+  skuSnapshot: string
   quantity: number
-  imageUrl: string
+  priceAtPurchase: number
+  currency: string
+  subtotal: number
 }
 
 export interface OrderSummary {
   id: string
   status: OrderStatus
-  total: number
+  totalAmount: number
+  currency: string
   createdAt: string
-  itemCount: number
 }
 
 export interface Order {
   id: string
+  userId: string
   status: OrderStatus
-  items: OrderItem[]
+  totalAmount: number
+  currency: string
   shippingAddress: ShippingAddress
-  total: number
-  paymentIntentId: string
+  items: OrderItem[]
   createdAt: string
-  guestEmail?: string
 }
 
 export interface CreateOrderPayload {
-  paymentIntentId: string
-  items: OrderItem[]
+  currency: string
+  items: { variantId: string; locationId: string; quantity: number }[]
   shippingAddress: ShippingAddress
-  guestEmail?: string
 }

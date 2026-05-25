@@ -1,10 +1,12 @@
 export interface CustomerUser {
   id: string
-  email: string
-  name: string
+  username: string
 }
 
 export interface AuthResponse {
-  token: string
-  user: CustomerUser
+  accessToken: string
+  refreshToken: string
+  tokenType: string
+  expiresIn: number
+  role: string
 }
