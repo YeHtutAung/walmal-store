@@ -1,7 +1,7 @@
 import { ApiError } from './client'
 
 export async function serverFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1'
   const res = await fetch(`${baseUrl}${path}`, {
     ...init,
     headers: { 'Content-Type': 'application/json', ...init?.headers },

@@ -1,47 +1,65 @@
-import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useParams } from 'next/navigation'
 import { ProductDetail } from '@/components/product/product-detail'
-import { fetchProduct, fetchProductsSSG } from '@/lib/api/products'
-import { ApiError } from '@/lib/api/client'
+import { apiClient } from '@/lib/api/client'
+import { useAuth } from '@/hooks/use-auth'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
+import { Skeleton } from '@/components/ui/skeleton'
+import type { Product } from '@/types/product'
 
-interface ProductPageProps {
-  params: Promise<{ slug: string }>
-}
+export default function ProductPage() {
+  const { slug } = useParams<{ slug: string }>()
+  const { status } = useAuth()
+  const [product, setProduct] = useState<Product | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
 
-export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  try {
-    const { slug } = await params
-    const product = await fetchProduct(slug)
-    return {
-      title: product.name,
-      description: product.description,
-      openGraph: { images: [product.imageUrl] },
-    }
-  } catch {
-    return { title: 'Product not found' }
-  }
-}
+  useEffect(() => {
+    if (status === 'loading') return
+    if (status === 'guest') { setLoading(false); return }
 
-export async function generateStaticParams() {
-  try {
-    const { products } = await fetchProductsSSG()
-    return products.slice(0, 20).map((p) => ({ slug: p.slug }))
-  } catch {
-    return []
-  }
-}
+    apiClient
+      .get<Product>(`/products/${slug}`)
+      .then((res) => setProduct(res.data))
+      .catch((err) => {
+        if (err?.status === 404) setNotFound(true)
+      })
+      .finally(() => setLoading(false))
+  }, [status, slug])
 
-export default async function ProductPage({ params }: ProductPageProps) {
-  try {
-    const { slug } = await params
-    const product = await fetchProduct(slug)
+  if (status === 'guest') {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <ProductDetail product={product} />
+      <div className="container mx-auto px-4 py-8 text-center space-y-4">
+        <p className="text-muted-foreground">Sign in to view this product.</p>
+        <Button asChild><Link href={`/login?next=/products/${slug}`}>Sign in</Link></Button>
       </div>
     )
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) notFound()
-    throw error
   }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 space-y-4">
+        <Skeleton className="h-8 w-64" />
+        <Skeleton className="h-96 w-full" />
+      </div>
+    )
+  }
+
+  if (notFound || !product) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center space-y-4">
+        <p className="text-muted-foreground">Product not found.</p>
+        <Button variant="outline" asChild><Link href="/products">Back to products</Link></Button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <ProductDetail product={product} />
+    </div>
+  )
 }
