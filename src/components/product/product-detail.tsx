@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { VariantSelector } from './variant-selector'
 import { useCart } from '@/hooks/use-cart'
 import { formatPrice } from '@/lib/utils'
+import { resolveMinioUrl } from '@/lib/minio-url'
 import type { Product, ProductVariant } from '@/types/product'
 
 interface ProductDetailProps {
@@ -37,7 +38,7 @@ export function ProductDetail({ product, variants }: ProductDetailProps) {
       <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
         {product.primaryImageUrl ? (
           <Image
-            src={product.primaryImageUrl}
+            src={resolveMinioUrl(product.primaryImageUrl)!}
             alt={product.name}
             fill
             className="object-cover"

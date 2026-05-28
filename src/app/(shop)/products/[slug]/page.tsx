@@ -19,7 +19,7 @@ export default function ProductPage() {
   const [notFound, setNotFound] = useState(false)
 
   useEffect(() => {
-    if (status === 'loading') return
+    if (status === 'idle' || status === 'loading') return
     if (status === 'guest') { setLoading(false); return }
 
     Promise.all([fetchProduct(productId), fetchProductVariants(productId)])

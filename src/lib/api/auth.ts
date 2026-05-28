@@ -15,7 +15,7 @@ export async function registerApi(
   return res.data
 }
 
-export async function refreshTokenApi(): Promise<AuthResponse> {
-  const res = await apiClient.post<AuthResponse>('/auth/refresh')
+export async function refreshTokenApi(refreshToken: string): Promise<AuthResponse> {
+  const res = await apiClient.post<AuthResponse>('/auth/refresh', { refreshToken })
   return res.data
 }

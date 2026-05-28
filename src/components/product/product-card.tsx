@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { formatPrice } from '@/lib/utils'
+import { resolveMinioUrl } from '@/lib/minio-url'
 import type { Product } from '@/types/product'
 
 interface ProductCardProps {
@@ -15,7 +16,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="relative aspect-square overflow-hidden bg-muted">
           {product.primaryImageUrl ? (
             <Image
-              src={product.primaryImageUrl}
+              src={resolveMinioUrl(product.primaryImageUrl)!}
               alt={product.name}
               fill
               className="object-cover transition-transform duration-300 group-hover:scale-105"

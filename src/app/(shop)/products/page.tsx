@@ -20,7 +20,7 @@ export default function ProductsPage() {
   const page = Number(searchParams.get('page') ?? '1')
 
   useEffect(() => {
-    if (status === 'loading') return
+    if (status === 'idle' || status === 'loading') return
     if (status === 'guest') { setLoading(false); return }
 
     setLoading(true)
