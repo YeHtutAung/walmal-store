@@ -14,6 +14,7 @@ vi.mock('@/store/cart-store', () => ({
 const CUSTOMER_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQ1VTVE9NRVIiLCJzdWIiOiIxIiwidXNlcm5hbWUiOiJhbGljZSJ9.sig'
 // JWT with role=ADMIN
 const ADMIN_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiQURNSU4iLCJzdWIiOiIyIiwidXNlcm5hbWUiOiJhZG1pbiJ9.sig'
+const STAFF_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiU1RBRkYiLCJzdWIiOiIzIiwidXNlcm5hbWUiOiJzdGFmZiJ9.sig'
 
 const makeAuthResponse = (accessToken: string) => ({
   accessToken,
@@ -66,6 +67,46 @@ describe('auth-store', () => {
     })
     useAuthStore.getState().logout()
     expect(useAuthStore.getState().token).toBeNull()
+    expect(useAuthStore.getState().status).toBe('guest')
+  })
+
+  it('login failure: wrong credentials → status guest, token null', async () => {
+    const { loginApi } = await import('@/lib/api/auth')
+    const { ApiError } = await import('@/lib/api/client')
+    vi.mocked(loginApi).mockRejectedValueOnce(new ApiError(401, 'UNAUTHORIZED', 'Bad credentials'))
+    const { useAuthStore } = await import('@/store/auth-store')
+    await expect(useAuthStore.getState().login('alice', 'wrong')).rejects.toThrow()
+    expect(useAuthStore.getState().status).toBe('guest')
+    expect(useAuthStore.getState().token).toBeNull()
+  })
+
+  it('STAFF role rejected: throws and status becomes guest', async () => {
+    const { loginApi } = await import('@/lib/api/auth')
+    vi.mocked(loginApi).mockResolvedValueOnce(makeAuthResponse(STAFF_TOKEN))
+    const { useAuthStore } = await import('@/store/auth-store')
+    await expect(useAuthStore.getState().login('staff', 'pass')).rejects.toThrow(
+      'This store is for customers only.',
+    )
+    expect(useAuthStore.getState().status).toBe('guest')
+  })
+
+  it('silent refresh success: status becomes authenticated with new token', async () => {
+    const { refreshTokenApi } = await import('@/lib/api/auth')
+    vi.mocked(refreshTokenApi).mockResolvedValueOnce(makeAuthResponse(CUSTOMER_TOKEN))
+    const { useAuthStore } = await import('@/store/auth-store')
+    useAuthStore.setState({ refreshToken: 'old-refresh', status: 'idle' } as any)
+    await useAuthStore.getState().refresh()
+    expect(useAuthStore.getState().status).toBe('authenticated')
+    expect(useAuthStore.getState().token).toBe(CUSTOMER_TOKEN)
+  })
+
+  it('silent refresh 401: status becomes guest, does not throw', async () => {
+    const { refreshTokenApi } = await import('@/lib/api/auth')
+    const { ApiError } = await import('@/lib/api/client')
+    vi.mocked(refreshTokenApi).mockRejectedValueOnce(new ApiError(401, 'UNAUTHORIZED', 'Token expired'))
+    const { useAuthStore } = await import('@/store/auth-store')
+    useAuthStore.setState({ refreshToken: 'expired-refresh', status: 'idle' } as any)
+    await expect(useAuthStore.getState().refresh()).resolves.toBeUndefined()
     expect(useAuthStore.getState().status).toBe('guest')
   })
 })

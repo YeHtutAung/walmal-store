@@ -21,6 +21,7 @@ const item2: CartItem = {
 
 describe('cart-store', () => {
   beforeEach(async () => {
+    localStorage.clear()
     const { useCartStore } = await import('@/store/cart-store')
     useCartStore.setState({ items: [] })
   })
@@ -85,5 +86,28 @@ describe('cart-store', () => {
     const v2 = items.find(i => i.variantId === 'v2')
     expect(v1?.quantity).toBe(1)
     expect(v2?.quantity).toBe(2)
+  })
+
+  it('localStorage rehydration: restores items after simulated page reload', async () => {
+    const { useCartStore } = await import('@/store/cart-store')
+    useCartStore.setState({ items: [] })
+    localStorage.setItem(
+      'walmal-cart',
+      JSON.stringify({ state: { items: [item1] }, version: 0 }),
+    )
+    await useCartStore.persist.rehydrate()
+    expect(useCartStore.getState().items).toHaveLength(1)
+    expect(useCartStore.getState().items[0].variantId).toBe('v1')
+    localStorage.removeItem('walmal-cart')
+  })
+
+  it('mergeGuestCart: preserves local items when server cart is empty', async () => {
+    const { useCartStore } = await import('@/store/cart-store')
+    useCartStore.setState({ items: [item1, item2] })
+    useCartStore.getState().mergeGuestCart([])
+    const items = useCartStore.getState().items
+    expect(items).toHaveLength(2)
+    expect(items.find((i) => i.variantId === 'v1')?.quantity).toBe(1)
+    expect(items.find((i) => i.variantId === 'v2')?.quantity).toBe(2)
   })
 })

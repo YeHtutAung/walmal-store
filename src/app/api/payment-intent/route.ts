@@ -6,12 +6,12 @@ const SUPPORTED_CURRENCIES = new Set(['usd', 'eur', 'gbp', 'sgd', 'myr'])
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { amount, currency = 'usd', metadata = {} } = body
+    const { amount, currency, metadata = {} } = body
 
     if (typeof amount !== 'number' || amount <= 0) {
       return NextResponse.json({ error: 'amount must be a positive number' }, { status: 400 })
     }
-    if (!SUPPORTED_CURRENCIES.has(currency)) {
+    if (!currency || !SUPPORTED_CURRENCIES.has(currency)) {
       return NextResponse.json({ error: 'Unsupported currency' }, { status: 400 })
     }
 

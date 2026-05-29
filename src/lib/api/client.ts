@@ -16,9 +16,9 @@ export const apiClient = axios.create({
   timeout: 10_000,
 })
 
-apiClient.interceptors.request.use((config) => {
+apiClient.interceptors.request.use(async (config) => {
   if (typeof window !== 'undefined') {
-    const { useAuthStore } = require('@/store/auth-store')
+    const { useAuthStore } = await import('@/store/auth-store')
     const token: string | null = useAuthStore.getState().token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -29,7 +29,7 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (res) => res,
-  (error: AxiosError<{ code?: string; message?: string; errors?: { field: string; message: string }[]; violations?: { field: string; message: string }[] }>) => {
+  async (error: AxiosError<{ code?: string; message?: string; errors?: { field: string; message: string }[]; violations?: { field: string; message: string }[] }>) => {
     const status = error.response?.status ?? 0
     const data = error.response?.data
     if (process.env.NODE_ENV === 'development' && status !== 404) console.error('[API error]', status, data)
@@ -38,11 +38,11 @@ apiClient.interceptors.response.use(
     const message = fieldErrors || data?.message || error.message
 
     if (status === 401 && typeof window !== 'undefined') {
-      const { useAuthStore } = require('@/store/auth-store')
+      const { useAuthStore } = await import('@/store/auth-store')
       // Only force-redirect when the user had an active session (token expired mid-session).
       // During 'idle' (silent refresh in progress) a 401 is expected — don't interrupt it.
       if (useAuthStore.getState().status === 'authenticated') {
-        const { useCartStore } = require('@/store/cart-store')
+        const { useCartStore } = await import('@/store/cart-store')
         useAuthStore.getState().logout()
         useCartStore.getState().clearCart()
         const next = window.location.pathname
