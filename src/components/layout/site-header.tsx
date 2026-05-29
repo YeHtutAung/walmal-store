@@ -1,15 +1,19 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/use-auth'
 import { CartIconButton } from './cart-icon-button'
+import { CartDrawer } from '@/components/cart/cart-drawer'
 import { Button } from '@/components/ui/button'
 
 export function SiteHeader() {
   const { status, user, logout } = useAuth()
   const isAuthenticated = status === 'authenticated'
+  const [cartOpen, setCartOpen] = useState(false)
 
   return (
+    <>
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="text-xl font-bold tracking-tight">
@@ -23,7 +27,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <CartIconButton />
+          <CartIconButton onClick={() => setCartOpen(true)} />
           {isAuthenticated ? (
             <>
               <Button variant="ghost" size="sm" asChild>
@@ -46,5 +50,7 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
+    <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+    </>
   )
 }

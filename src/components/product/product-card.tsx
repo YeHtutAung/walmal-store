@@ -11,8 +11,8 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <Card className="group overflow-hidden">
-      <Link href={`/products/${product.productId}`}>
+    <Card className="group overflow-hidden" data-testid="product-card">
+      <Link href={`/products/${product.productId}`} data-testid="product-card-link">
         <div className="relative aspect-square overflow-hidden bg-muted">
           {product.primaryImageUrl ? (
             <Image

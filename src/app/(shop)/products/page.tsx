@@ -5,8 +5,6 @@ import { useSearchParams } from 'next/navigation'
 import { ProductGrid } from '@/components/product/product-grid'
 import { fetchProducts } from '@/lib/api/products'
 import { useAuth } from '@/hooks/use-auth'
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
 import type { ProductListResponse } from '@/types/product'
 
 export default function ProductsPage() {
@@ -20,26 +18,17 @@ export default function ProductsPage() {
   const page = Number(searchParams.get('page') ?? '1')
 
   useEffect(() => {
+    // Wait for the auth provider to settle before fetching (avoids a redundant
+    // request that would be cancelled once the refresh token resolves).
     if (status === 'idle' || status === 'loading') return
-    if (status === 'guest') { setLoading(false); return }
 
     setLoading(true)
     setError(null)
-
     fetchProducts({ search, page })
       .then(setData)
       .catch((err) => setError(err?.message ?? 'Failed to load products'))
       .finally(() => setLoading(false))
   }, [status, search, page])
-
-  if (status === 'guest') {
-    return (
-      <div className="container mx-auto px-4 py-8 text-center space-y-4">
-        <p className="text-muted-foreground">Sign in to browse products.</p>
-        <Button asChild><Link href="/login?next=/products">Sign in</Link></Button>
-      </div>
-    )
-  }
 
   return (
     <div className="container mx-auto px-4 py-8">

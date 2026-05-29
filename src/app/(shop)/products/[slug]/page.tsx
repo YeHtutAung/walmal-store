@@ -20,22 +20,12 @@ export default function ProductPage() {
 
   useEffect(() => {
     if (status === 'idle' || status === 'loading') return
-    if (status === 'guest') { setLoading(false); return }
 
     Promise.all([fetchProduct(productId), fetchProductVariants(productId)])
       .then(([p, v]) => { setProduct(p); setVariants(v) })
       .catch((err) => { if (err?.status === 404) setNotFound(true) })
       .finally(() => setLoading(false))
   }, [status, productId])
-
-  if (status === 'guest') {
-    return (
-      <div className="container mx-auto px-4 py-8 text-center space-y-4">
-        <p className="text-muted-foreground">Sign in to view this product.</p>
-        <Button asChild><Link href={`/login?next=/products/${productId}`}>Sign in</Link></Button>
-      </div>
-    )
-  }
 
   if (loading) {
     return (

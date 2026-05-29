@@ -43,15 +43,27 @@ export function CheckoutForm() {
     if (mode === 'choose' || items.length === 0) return
 
     async function fetchClientSecret() {
-      const res = await fetch('/api/payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        // Stripe expects amount in cents; prices are decimal
-        body: JSON.stringify({ amount: Math.round(subtotal * 100), currency: 'usd' }),
-      })
-      const data = await res.json()
-      setClientSecret(data.clientSecret)
-      setCheckoutStatus('ready')
+      try {
+        const res = await fetch('/api/payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: Math.round(subtotal * 100), currency: 'usd' }),
+        })
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}))
+          console.error('[checkout] POST /api/payment-intent failed', res.status, body)
+          return
+        }
+        const data = await res.json()
+        if (!data.clientSecret) {
+          console.error('[checkout] POST /api/payment-intent returned no clientSecret', data)
+          return
+        }
+        setClientSecret(data.clientSecret)
+        setCheckoutStatus('ready')
+      } catch (err) {
+        console.error('[checkout] Failed to fetch payment intent', err)
+      }
     }
 
     fetchClientSecret()
