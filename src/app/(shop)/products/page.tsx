@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ProductGrid } from '@/components/product/product-grid'
 import { fetchProducts } from '@/lib/api/products'
@@ -8,6 +8,14 @@ import { useAuth } from '@/hooks/use-auth'
 import type { ProductListResponse } from '@/types/product'
 
 export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto px-4 py-8"><h1 className="text-3xl font-bold mb-8">Products</h1><p className="text-muted-foreground">Loading…</p></div>}>
+      <ProductsContent />
+    </Suspense>
+  )
+}
+
+function ProductsContent() {
   const searchParams = useSearchParams()
   const { status } = useAuth()
   const [data, setData] = useState<ProductListResponse | null>(null)
