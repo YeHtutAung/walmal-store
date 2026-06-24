@@ -16,23 +16,38 @@ export default defineConfig({
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    actionTimeout: 15_000,
   },
-  // Ensures the Next.js server started by Playwright has the Stripe keys from
-  // .env.test.local.  When a server is already running on :3000 locally,
-  // reuseExistingServer skips the start — in that case the server must have
-  // been started with these vars set (or via `npm run test:e2e` from cold).
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: false,
-    stdout: 'ignore',
-    stderr: 'pipe',
-    env: {
-      NEXT_PUBLIC_API_URL:                  process.env.NEXT_PUBLIC_API_URL                  ?? 'http://localhost:8080/api/v1',
-      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY   ?? '',
-      STRIPE_SECRET_KEY:                    process.env.STRIPE_SECRET_KEY                    ?? '',
+  // Two servers: Spring Boot backend + Next.js frontend.
+  // The backend entry starts Docker Compose infrastructure and the Spring Boot JAR.
+  // reuseExistingServer:true for the backend so warm restarts reuse a running instance.
+  webServer: [
+    {
+      command: [
+        'docker compose -f ../walmal/docker-compose.yml up -d --wait',
+        'postgres redis rabbitmq minio mailhog',
+        '&&',
+        'java -Dwalmal.rate-limit.unauthenticated-limit=300 -jar ../walmal/walmal-app/target/walmal-app-0.1.0-SNAPSHOT.jar',
+      ].join(' '),
+      url: 'http://localhost:8080/actuator/health',
+      reuseExistingServer: true,
+      timeout: 180_000,
+      stdout: 'pipe',
+      stderr: 'pipe',
     },
-  },
+    {
+      command: 'npm run dev',
+      url: 'http://localhost:3000',
+      reuseExistingServer: !process.env.CI,
+      stdout: 'ignore',
+      stderr: 'pipe',
+      env: {
+        NEXT_PUBLIC_API_URL:                  process.env.NEXT_PUBLIC_API_URL                  ?? 'http://localhost:8080/api/v1',
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY   ?? '',
+        STRIPE_SECRET_KEY:                    process.env.STRIPE_SECRET_KEY                    ?? '',
+      },
+    },
+  ],
   projects: [
     {
       name: 'chromium',

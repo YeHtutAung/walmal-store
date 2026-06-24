@@ -24,10 +24,10 @@ import type { CartItem } from '../../src/types/cart'
 // UPDATE THIS with a real variantId + locationId from your seeded backend
 // ---------------------------------------------------------------------------
 const SEEDED_ITEM: CartItem = {
-  variantId:   'REPLACE_WITH_SEEDED_VARIANT_ID',
-  productName: 'Seeded Test Product',
-  variantName: 'Variant A',
-  price:       1999,
+  variantId:   '20000000-0000-0000-0000-000000000001',
+  productName: 'Galaxy S24 Ultra',
+  variantName: 'SAM-S24U-256-BLK',
+  price:       1199.99,
   quantity:    1,
   imageUrl:    '',
 }
@@ -112,7 +112,7 @@ test('TC-E2E-015 successful guest checkout with Stripe test card', async ({ page
   await page.fill('#country', TEST_ADDRESS.country)
 
   // Wait for Stripe CardElement to load and fill card details
-  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').last()
+  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
     .locator('[placeholder="Card number"]')).toBeVisible({ timeout: 15_000 })
   await fillStripeCard(page)
 
@@ -150,7 +150,7 @@ test('TC-E2E-018 declined card shows Stripe error message, form re-enabled', asy
   await page.fill('#postalCode', TEST_ADDRESS.postalCode)
   await page.fill('#country', TEST_ADDRESS.country)
 
-  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').last()
+  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
     .locator('[placeholder="Card number"]')).toBeVisible({ timeout: 15_000 })
   await fillStripeCard(page, { number: '4000000000009995', expiry: '1226', cvc: '123' })
 
@@ -183,7 +183,7 @@ test('TC-E2E-019 failed payment does not create an order', async ({ page }) => {
   await page.fill('#postalCode', TEST_ADDRESS.postalCode)
   await page.fill('#country', TEST_ADDRESS.country)
 
-  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').last()
+  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
     .locator('[placeholder="Card number"]')).toBeVisible({ timeout: 15_000 })
   // Use a card that Stripe declines before creating a PaymentIntent confirmation
   await fillStripeCard(page, { number: '4000000000000002', expiry: '1226', cvc: '123' })
@@ -206,7 +206,7 @@ test('TC-E2E-020 insufficient-funds card shows correct user-facing error', async
   await page.fill('#postalCode', TEST_ADDRESS.postalCode)
   await page.fill('#country', TEST_ADDRESS.country)
 
-  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').last()
+  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
     .locator('[placeholder="Card number"]')).toBeVisible({ timeout: 15_000 })
   // 4000000000009995 = insufficient_funds decline
   await fillStripeCard(page, { number: '4000000000009995', expiry: '1226', cvc: '123' })

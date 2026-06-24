@@ -29,13 +29,13 @@ apiClient.interceptors.request.use(async (config) => {
 
 apiClient.interceptors.response.use(
   (res) => res,
-  async (error: AxiosError<{ code?: string; message?: string; errors?: { field: string; message: string }[]; violations?: { field: string; message: string }[] }>) => {
+  async (error: AxiosError<{ code?: string; message?: string; detail?: string; errors?: { field: string; message: string }[]; violations?: { field: string; message: string }[] }>) => {
     const status = error.response?.status ?? 0
     const data = error.response?.data
     if (process.env.NODE_ENV === 'development' && status !== 404) console.error('[API error]', status, data)
     const code = data?.code ?? 'UNKNOWN'
     const fieldErrors = (data?.errors ?? data?.violations ?? []).map((e) => `${e.field}: ${e.message}`).join('; ')
-    const message = fieldErrors || data?.message || error.message
+    const message = fieldErrors || data?.message || data?.detail || error.message
 
     if (status === 401 && typeof window !== 'undefined') {
       const { useAuthStore } = await import('@/store/auth-store')

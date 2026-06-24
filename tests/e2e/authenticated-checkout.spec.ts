@@ -29,19 +29,19 @@ import type { CartItem } from '../../src/types/cart'
 // UPDATE with real values from your seeded backend
 // ---------------------------------------------------------------------------
 const SEEDED_ITEM: CartItem = {
-  variantId:   'REPLACE_WITH_SEEDED_VARIANT_ID',
-  productName: 'Seeded Test Product',
-  variantName: 'Variant A',
-  price:       1999,
+  variantId:   '20000000-0000-0000-0000-000000000001',
+  productName: 'Galaxy S24 Ultra',
+  variantName: 'SAM-S24U-256-BLK',
+  price:       1199.99,
   quantity:    1,
   imageUrl:    '',
 }
 
 const SEEDED_ITEM_B: CartItem = {
-  variantId:   'REPLACE_WITH_SEEDED_VARIANT_ID_B',
-  productName: 'Seeded Test Product',
-  variantName: 'Variant B',
-  price:       2499,
+  variantId:   '20000000-0000-0000-0000-000000000002',
+  productName: 'Galaxy S24 Ultra',
+  variantName: 'SAM-S24U-512-TIT',
+  price:       1419.99,
   quantity:    1,
   imageUrl:    '',
 }
@@ -161,7 +161,7 @@ test('TC-E2E-033 successful authenticated checkout — order appears in /account
   await page.fill('#country', TEST_ADDRESS.country)
 
   // Wait for Stripe iframe and fill card
-  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').last()
+  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
     .locator('[placeholder="Card number"]')).toBeVisible({ timeout: 15_000 })
   await fillStripeCard(page)
 
@@ -196,7 +196,7 @@ test('TC-E2E-034 order detail page shows items, total, and status', async ({ pag
   await page.fill('#postalCode', TEST_ADDRESS.postalCode)
   await page.fill('#country', TEST_ADDRESS.country)
 
-  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').last()
+  await expect(page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
     .locator('[placeholder="Card number"]')).toBeVisible({ timeout: 15_000 })
   await fillStripeCard(page)
 

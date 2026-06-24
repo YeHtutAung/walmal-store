@@ -16,7 +16,10 @@ interface AuthState {
 
 function decodePayload(token: string): Record<string, string> {
   try {
-    return JSON.parse(atob(token.split('.')[1]))
+    // Real JWTs use base64url (- and _ instead of + and /); atob() needs standard base64
+    const b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    const padded = b64.padEnd(b64.length + (4 - (b64.length % 4)) % 4, '=')
+    return JSON.parse(atob(padded))
   } catch {
     return {}
   }
