@@ -14,7 +14,7 @@ interface AuthState {
   setToken: (token: string, refreshToken: string, user: CustomerUser) => void
 }
 
-function decodePayload(token: string): Record<string, string> {
+export function decodePayload(token: string): Record<string, string> {
   try {
     // Real JWTs use base64url (- and _ instead of + and /); atob() needs standard base64
     const b64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')

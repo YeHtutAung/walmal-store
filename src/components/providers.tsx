@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useAuthStore } from '@/store/auth-store'
+import { useAuthStore, decodePayload } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
 import { refreshTokenApi } from '@/lib/api/auth'
 import { fetchServerCart, syncServerCart } from '@/lib/api/cart'
@@ -24,7 +24,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       try {
         const data = await refreshTokenApi(refreshToken)
-        const payload = JSON.parse(atob(data.accessToken.split('.')[1]))
+        const payload = decodePayload(data.accessToken)
         setToken(data.accessToken, data.refreshToken, { id: payload.sub, username: payload.username })
 
         try {
