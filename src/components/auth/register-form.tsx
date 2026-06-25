@@ -19,7 +19,8 @@ export function RegisterForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  const next = searchParams.get('next') ?? '/account'
+  const rawNext = searchParams.get('next') ?? ''
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/account'
   const isLoading = status === 'loading'
 
   async function handleSubmit(e: React.FormEvent) {
