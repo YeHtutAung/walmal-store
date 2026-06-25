@@ -49,6 +49,7 @@ export function StripePayment({ clientSecret, onSuccess, disabled }: StripePayme
       <div className="rounded-md border p-3">
         <CardElement
           options={{
+            hidePostalCode: true,
             style: {
               base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } },
               invalid: { color: '#9e2146' },

@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server'
 
 const MOCK_USERS = [
-  { username: 'customer_test', password: 'TestPass123!', role: 'CUSTOMER' },
-  { username: 'admin_test', password: 'AdminPass123!', role: 'ADMIN' },
+  { username: 'customer_test', password: 'TestPass123!', role: 'CUSTOMER', sub: 'user-customer-001' },
+  { username: 'admin_test', password: 'AdminPass123!', role: 'ADMIN', sub: 'user-admin-001' },
 ]
+
+function makeToken(payload: Record<string, string>, expiresIn = 3600) {
+  const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64')
+  const body = Buffer.from(JSON.stringify({ ...payload, exp: Math.floor(Date.now() / 1000) + expiresIn })).toString('base64')
+  return `${header}.${body}.mock-sig`
+}
 
 export async function POST(req: Request) {
   const body = await req.json()
@@ -18,10 +24,9 @@ export async function POST(req: Request) {
   }
 
   return NextResponse.json({
-    accessToken: `mock-access-${user.username}-${Date.now()}`,
-    refreshToken: `mock-refresh-${user.username}-${Date.now()}`,
+    accessToken: makeToken({ sub: user.sub, username: user.username, role: user.role }),
+    refreshToken: makeToken({ sub: user.sub, username: user.username, role: user.role }, 86400),
     tokenType: 'Bearer',
     expiresIn: 3600,
-    role: user.role,
   })
 }

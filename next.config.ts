@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
       {
         pathname: '/api/minio/**',
       },
+      {
+        pathname: '/images/**',
+      },
     ],
     remotePatterns: [
       {
@@ -13,7 +16,7 @@ const nextConfig: NextConfig = {
         hostname: 'localhost',
         port: '8080',
       },
-{
+      {
         protocol: 'https',
         hostname: '**',
       },

@@ -81,6 +81,7 @@ export function CheckoutForm() {
           quantity: i.quantity,
         })),
         shippingAddress: address as ShippingAddress,
+        ...(mode === 'guest' && guestEmail ? { guestEmail } : {}),
       })
       clearCart()
       router.push(`/order-confirmation?id=${orderId}`)
@@ -149,7 +150,7 @@ export function CheckoutForm() {
         <h2 className="text-xl font-semibold">Payment</h2>
 
         {clientSecret && (
-          <Elements stripe={stripePromise} options={{ clientSecret }}>
+          <Elements stripe={stripePromise}>
             <StripePayment
               clientSecret={clientSecret}
               onSuccess={handlePaymentSuccess}

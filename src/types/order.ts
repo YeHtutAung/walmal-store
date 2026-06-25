@@ -41,4 +41,5 @@ export interface CreateOrderPayload {
   currency: string
   items: { variantId: string; locationId: string; quantity: number }[]
   shippingAddress: ShippingAddress
+  guestEmail?: string
 }

@@ -20,9 +20,6 @@ export async function fetchOrder(id: string): Promise<Order> {
 }
 
 export async function fetchDefaultLocationId(): Promise<string> {
-  const res = await apiClient.get<ApiResponse<{ id: string; active: boolean; bufferLocation: boolean }[]>>('/inventory/locations')
-  const locations = res.data.data
-  const active = locations.find((l) => l.active && !l.bufferLocation) ?? locations[0]
-  if (!active) throw new Error('No inventory location available')
-  return active.id
+  const res = await apiClient.get<ApiResponse<{ id: string; active: boolean; bufferLocation: boolean }>>('/inventory/locations/default')
+  return res.data.data.id
 }

@@ -1,18 +1,13 @@
 import { NextResponse } from 'next/server'
+import { mockDb } from '@/lib/mock-db'
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const order = mockDb.orders[id]
 
-  return NextResponse.json({
-    data: {
-      id,
-      userId: 'mock-user',
-      status: 'PENDING',
-      totalAmount: 0,
-      currency: 'USD',
-      shippingAddress: { line1: '', city: '', postalCode: '', country: 'US' },
-      items: [],
-      createdAt: new Date().toISOString(),
-    },
-  })
+  if (!order) {
+    return NextResponse.json({ code: 'NOT_FOUND', message: 'Order not found.' }, { status: 404 })
+  }
+
+  return NextResponse.json({ data: order })
 }
