@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { mockDb } from '@/lib/mock-db'
 
+function requireAuth(req: Request): NextResponse | null {
+  if (!req.headers.get('authorization')?.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  return null
+}
+
 export async function POST(req: Request) {
+  const authError = requireAuth(req)
+  if (authError) return authError
   const body = await req.json()
   const orderId = `order-${Date.now()}`
 
@@ -28,6 +37,8 @@ export async function POST(req: Request) {
 }
 
 export async function GET(_req: NextRequest) {
+  const authError = requireAuth(_req)
+  if (authError) return authError
   const orders = Object.values(mockDb.orders).map((o) => ({
     id: o.id,
     status: o.status,

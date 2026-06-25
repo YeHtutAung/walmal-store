@@ -12,6 +12,8 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   const cartStore = useCartStore()
 
   useEffect(() => {
+    let refreshInterval: ReturnType<typeof setInterval> | null = null
+
     async function attemptSilentRefresh() {
       // Read from store directly — avoid stale closure from first render
       // (persist hydration may update refreshToken after initial render)
@@ -26,6 +28,13 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         const data = await refreshTokenApi(refreshToken)
         const payload = decodePayload(data.accessToken)
         setToken(data.accessToken, data.refreshToken, { id: payload.sub, username: payload.username })
+
+        // Proactively refresh token every 50 minutes so long-lived sessions stay valid
+        refreshInterval = setInterval(() => {
+          if (useAuthStore.getState().status === 'authenticated') {
+            useAuthStore.getState().refresh()
+          }
+        }, 50 * 60 * 1000)
 
         try {
           const serverItems = await fetchServerCart()
@@ -42,6 +51,10 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     attemptSilentRefresh()
+
+    return () => {
+      if (refreshInterval) clearInterval(refreshInterval)
+    }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return <>{children}</>

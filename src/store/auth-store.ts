@@ -14,6 +14,13 @@ interface AuthState {
   setToken: (token: string, refreshToken: string, user: CustomerUser) => void
 }
 
+function setAuthCookie(authenticated: boolean) {
+  if (typeof document === 'undefined') return
+  document.cookie = authenticated
+    ? 'walmal-auth=1; SameSite=Strict; Path=/'
+    : 'walmal-auth=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/'
+}
+
 export function decodePayload(token: string): Record<string, string> {
   try {
     // Real JWTs use base64url (- and _ instead of + and /); atob() needs standard base64
@@ -49,6 +56,7 @@ export const useAuthStore = create<AuthState>()(
             user: { id: payload.sub, username: payload.username },
             status: 'authenticated',
           })
+          setAuthCookie(true)
         } catch (e) {
           const current = get().status
           if (current !== 'guest') set({ status: 'guest' })
@@ -67,11 +75,19 @@ export const useAuthStore = create<AuthState>()(
           user: { id: payload.sub, username: payload.username },
           status: 'authenticated',
         })
+        setAuthCookie(true)
       },
 
       refresh: async () => {
         const storedRefresh = get().refreshToken
         if (!storedRefresh) return
+        // Skip refresh if the current access token still has >5 minutes remaining
+        const currentToken = get().token
+        if (currentToken) {
+          const payload = decodePayload(currentToken)
+          const exp = Number(payload.exp)
+          if (exp && exp * 1000 - Date.now() > 5 * 60 * 1000) return
+        }
         try {
           const { refreshTokenApi } = await import('@/lib/api/auth')
           const { accessToken, refreshToken: newRefreshToken } = await refreshTokenApi(storedRefresh)
@@ -89,10 +105,13 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         set({ token: null, refreshToken: null, user: null, status: 'guest' })
+        setAuthCookie(false)
       },
 
-      setToken: (token, refreshToken, user) =>
-        set({ token, refreshToken, user, status: 'authenticated' }),
+      setToken: (token, refreshToken, user) => {
+        set({ token, refreshToken, user, status: 'authenticated' })
+        setAuthCookie(true)
+      },
     }),
     {
       name: 'auth-storage',
