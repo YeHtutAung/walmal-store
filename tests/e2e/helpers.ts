@@ -19,10 +19,20 @@ export const ADMIN = { username: 'admin_test', password: 'AdminPass123!' }
 /** Navigate to /login, fill credentials, wait for redirect to /account. */
 export async function loginAs(page: Page, username: string, password: string) {
   await page.goto('/login')
-  await page.fill('#username', username)
+  // Wait for React's Suspense-deferred LoginForm to finish client-side rendering
+  // before filling — needed in WebKit (slower JSCore) to avoid the form being
+  // mounted mid-fill and overwriting the filled value.
+  await page.waitForSelector('#username')
+  // Use pressSequentially (char-by-char) instead of fill for the username field.
+  // fill() dispatches a single synthetic input event; in WebKit the AuthProvider's
+  // useEffect (idle→guest) can trigger a re-render that resets the controlled
+  // input value before React batches the onChange update.  pressSequentially fires
+  // one event per character so each character's state update survives the race.
+  await page.locator('#username').pressSequentially(username)
   await page.fill('#password', password)
   await page.click('button[type=submit]')
   await page.waitForURL(/\/account/, { timeout: 15_000 })
+  await page.waitForTimeout(500)
 }
 
 export const loginAsCustomer = (page: Page) =>
@@ -80,12 +90,11 @@ export async function fillStripeCard(
     cvc:    '123',
   },
 ) {
-  const frame = page.frameLocator('iframe[name^="__privateStripeFrame"]').last()
+  const frame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
   await frame.locator('[placeholder="Card number"]').click()
   await page.keyboard.type(opts.number)
-  await page.keyboard.press('Tab')
+  // Stripe auto-advances focus through all fields (card→expiry→CVC) — no Tab needed
   await page.keyboard.type(opts.expiry)
-  await page.keyboard.press('Tab')
   await page.keyboard.type(opts.cvc)
 }
 
