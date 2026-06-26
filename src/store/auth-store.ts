@@ -54,11 +54,16 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   register: async (email, password, username) => {
     set({ status: 'loading' })
-    const { registerApi } = await import('@/lib/api/auth')
-    const { accessToken } = await registerApi(email, password, username)
-    const payload = decodePayload(accessToken)
-    set({ token: accessToken, user: { id: payload.sub, username: payload.username }, status: 'authenticated' })
-    setAuthCookie(true)
+    try {
+      const { registerApi } = await import('@/lib/api/auth')
+      const { accessToken } = await registerApi(email, password, username)
+      const payload = decodePayload(accessToken)
+      set({ token: accessToken, user: { id: payload.sub, username: payload.username }, status: 'authenticated' })
+      setAuthCookie(true)
+    } catch (e) {
+      set({ status: 'guest' })
+      throw e
+    }
   },
 
   refresh: async () => {
