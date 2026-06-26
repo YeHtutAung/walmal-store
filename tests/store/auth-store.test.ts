@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 vi.mock('@/lib/api/auth', () => ({
   loginApi: vi.fn(),
   registerApi: vi.fn(),
-  refreshTokenApi: vi.fn(),
+  refreshApi: vi.fn(),
 }))
 
 vi.mock('@/store/cart-store', () => ({
@@ -18,10 +18,8 @@ const STAFF_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiU1RBRkYiLCJzdWIiOiIzIiwidX
 
 const makeAuthResponse = (accessToken: string) => ({
   accessToken,
-  refreshToken: 'refresh-tok',
   tokenType: 'Bearer',
   expiresIn: 900,
-  role: 'CUSTOMER',
 })
 
 describe('auth-store', () => {
@@ -91,21 +89,21 @@ describe('auth-store', () => {
   })
 
   it('silent refresh success: status becomes authenticated with new token', async () => {
-    const { refreshTokenApi } = await import('@/lib/api/auth')
-    vi.mocked(refreshTokenApi).mockResolvedValueOnce(makeAuthResponse(CUSTOMER_TOKEN))
+    const { refreshApi } = await import('@/lib/api/auth')
+    vi.mocked(refreshApi).mockResolvedValueOnce(makeAuthResponse(CUSTOMER_TOKEN))
     const { useAuthStore } = await import('@/store/auth-store')
-    useAuthStore.setState({ refreshToken: 'old-refresh', status: 'idle' } as any)
+    useAuthStore.setState({ status: 'idle' } as any)
     await useAuthStore.getState().refresh()
     expect(useAuthStore.getState().status).toBe('authenticated')
     expect(useAuthStore.getState().token).toBe(CUSTOMER_TOKEN)
   })
 
   it('silent refresh 401: status becomes guest, does not throw', async () => {
-    const { refreshTokenApi } = await import('@/lib/api/auth')
+    const { refreshApi } = await import('@/lib/api/auth')
     const { ApiError } = await import('@/lib/api/client')
-    vi.mocked(refreshTokenApi).mockRejectedValueOnce(new ApiError(401, 'UNAUTHORIZED', 'Token expired'))
+    vi.mocked(refreshApi).mockRejectedValueOnce(new ApiError(401, 'UNAUTHORIZED', 'Token expired'))
     const { useAuthStore } = await import('@/store/auth-store')
-    useAuthStore.setState({ refreshToken: 'expired-refresh', status: 'idle' } as any)
+    useAuthStore.setState({ status: 'idle' } as any)
     await expect(useAuthStore.getState().refresh()).resolves.toBeUndefined()
     expect(useAuthStore.getState().status).toBe('guest')
   })
