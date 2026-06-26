@@ -20,7 +20,15 @@ export async function POST(req: NextRequest) {
       { status: 503 }
     )
   }
-  const data = await upstream.json()
+  let data: Record<string, unknown>
+  try {
+    data = await upstream.json()
+  } catch {
+    return NextResponse.json(
+      { code: 'UPSTREAM_ERROR', message: 'Upstream returned a non-JSON response.' },
+      { status: 502 }
+    )
+  }
   if (!upstream.ok) {
     return NextResponse.json(data, { status: upstream.status })
   }
@@ -32,7 +40,7 @@ export async function POST(req: NextRequest) {
     )
   }
   const res = NextResponse.json(clientData)
-  res.cookies.set('walmal-rt', refreshToken, {
+  res.cookies.set('walmal-rt', refreshToken as string, {
     httpOnly: true,
     secure: SECURE,
     sameSite: 'strict',
