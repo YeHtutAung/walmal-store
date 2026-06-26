@@ -10,7 +10,7 @@ export async function createOrder(payload: CreateOrderPayload): Promise<{ orderI
 }
 
 export async function fetchOrders(): Promise<OrderSummary[]> {
-  const res = await apiClient.get<ApiResponse<ApiPage<OrderSummary>>>('/orders?page=0&size=50')
+  const res = await apiClient.get<ApiResponse<ApiPage<OrderSummary>>>('/orders?page=0&size=50&sort=createdAt,desc')
   return res.data.data.content
 }
 

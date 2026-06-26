@@ -47,5 +47,15 @@ export async function POST(req: NextRequest) {
     path: '/api/auth',
     maxAge: 60 * 60 * 24 * 7,
   })
+  // Set presence cookie server-side so Chrome's multi-process cookie store
+  // commits it before the next navigation request (RSC fetch) is made.
+  // Client-side setAuthCookie() may lose the IPC race in Chromium.
+  res.cookies.set('walmal-auth', '1', {
+    httpOnly: false,
+    secure: SECURE,
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7,
+  })
   return res
 }

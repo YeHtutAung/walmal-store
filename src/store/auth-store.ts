@@ -29,7 +29,13 @@ export function decodePayload(token: string): Record<string, string> {
   }
 }
 
-export const useAuthStore = create<AuthState>()((set, get) => ({
+// In Next.js dev mode, webpack HMR re-evaluates this module whenever the
+// account-page chunk is first compiled (which happens mid-navigation on the
+// first test run).  That re-evaluation calls create() again, producing a fresh
+// store with status:'idle' while the old Providers useEffect is still running —
+// so the account layout sees status:'idle' and shows the spinner indefinitely.
+// Storing the instance in globalThis preserves it across hot-update cycles.
+const _createAuthStore = () => create<AuthState>()((set, get) => ({
   token: null,
   user: null,
   status: 'idle',
@@ -96,3 +102,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     setAuthCookie(true)
   },
 }))
+
+type AuthStore = ReturnType<typeof _createAuthStore>
+declare global { var __walmal_auth_store: AuthStore | undefined } // eslint-disable-line no-var
+export const useAuthStore: AuthStore =
+  typeof window !== 'undefined'
+    ? (globalThis.__walmal_auth_store ??= _createAuthStore())
+    : _createAuthStore()

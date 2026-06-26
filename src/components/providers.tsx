@@ -17,6 +17,10 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     async function attemptSilentRefresh() {
       const { status } = useAuthStore.getState()
       if (status !== 'idle') return
+      // Claim 'loading' synchronously so a React StrictMode double-invocation
+      // sees status !== 'idle' and exits early, preventing two concurrent
+      // single-use refresh token requests that race and clobber each other.
+      useAuthStore.setState({ status: 'loading' })
 
       try {
         const data = await refreshApi()
@@ -39,8 +43,13 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             // Unexpected cart sync error — ignore silently
           }
         }
-      } catch {
-        useAuthStore.setState({ status: 'guest' })
+      } catch (e) {
+        // Only revert to guest if no newer auth operation (e.g. register/login)
+        // has already set a different status. Prevents the catch from clobbering
+        // a concurrent register() that finished while this refresh was in-flight.
+        if (useAuthStore.getState().status === 'loading') {
+          useAuthStore.setState({ status: 'guest' })
+        }
       }
     }
 

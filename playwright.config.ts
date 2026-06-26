@@ -6,6 +6,7 @@ config({ path: path.resolve(__dirname, '.env.test.local') })
 
 export default defineConfig({
   testDir: './tests/e2e',
+  globalSetup: './tests/e2e/global-setup.ts',
   timeout: 60_000,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
@@ -29,7 +30,7 @@ export default defineConfig({
         '&&',
         'java -Dwalmal.rate-limit.unauthenticated-limit=300 -jar ../walmal/walmal-app/target/walmal-app-0.1.0-SNAPSHOT.jar',
       ].join(' '),
-      url: 'http://localhost:8080/actuator/health',
+      url: 'http://localhost:8080/actuator/info',
       reuseExistingServer: true,
       timeout: 180_000,
       stdout: 'pipe',
