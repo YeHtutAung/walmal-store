@@ -119,22 +119,3 @@ export async function gotoAndWaitForAuth(page: Page, url: string) {
     page.goto(url),
   ])
 }
-
-/** Wait for the auth provider's silent-refresh to settle (idle → guest|authenticated). */
-export async function waitForAuthReady(page: Page) {
-  await page.waitForFunction(
-    () => {
-      try {
-        const raw = localStorage.getItem('auth-storage')
-        // Zustand persist key; if not present, auth store is still in-memory idle
-        // and the AuthProvider useEffect has not run yet — wait a bit more.
-        return raw !== null
-      } catch {
-        return false
-      }
-    },
-    { timeout: 10_000 },
-  )
-  // Also give React a tick to flush useEffect
-  await page.waitForTimeout(300)
-}

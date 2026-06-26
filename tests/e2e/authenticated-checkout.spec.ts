@@ -127,7 +127,7 @@ test('TC-E2E-031 guest cart items are present after login', async ({ page }) => 
 //   This test verifies the merge does not drop local-only items.
 // ---------------------------------------------------------------------------
 test('TC-E2E-032 cart items survive silent-refresh merge', async ({ page }) => {
-  // Log in to get a valid refreshToken stored in auth-storage
+  // Log in — refresh token is stored in httpOnly cookie by the /api/auth/refresh proxy
   await loginAsCustomer(page)
 
   // Seed a local cart item (simulates cart added while browsing)
