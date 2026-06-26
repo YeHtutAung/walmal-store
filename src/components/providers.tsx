@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { useAuthStore, decodePayload } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
-import { refreshTokenApi } from '@/lib/api/auth'
+import { refreshApi } from '@/lib/api/auth'
 import { fetchServerCart, syncServerCart } from '@/lib/api/cart'
 import { ApiError } from '@/lib/api/client'
 
@@ -15,21 +15,15 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     let refreshInterval: ReturnType<typeof setInterval> | null = null
 
     async function attemptSilentRefresh() {
-      // Read from store directly — avoid stale closure from first render
-      // (persist hydration may update refreshToken after initial render)
-      const { refreshToken, status } = useAuthStore.getState()
+      const { status } = useAuthStore.getState()
       if (status !== 'idle') return
 
-      if (!refreshToken) {
-        useAuthStore.setState({ status: 'guest' })
-        return
-      }
       try {
-        const data = await refreshTokenApi(refreshToken)
+        const data = await refreshApi()
         const payload = decodePayload(data.accessToken)
-        setToken(data.accessToken, data.refreshToken, { id: payload.sub, username: payload.username })
+        setToken(data.accessToken, { id: payload.sub, username: payload.username })
 
-        // Proactively refresh token every 50 minutes so long-lived sessions stay valid
+        // Proactively refresh every 50 minutes for long-lived sessions
         refreshInterval = setInterval(() => {
           if (useAuthStore.getState().status === 'authenticated') {
             useAuthStore.getState().refresh()
@@ -46,7 +40,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } catch {
-        useAuthStore.setState({ status: 'guest', refreshToken: null })
+        useAuthStore.setState({ status: 'guest' })
       }
     }
 
