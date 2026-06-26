@@ -22,7 +22,7 @@
  */
 
 import { test, expect } from '@playwright/test'
-import { clearState, loginAsCustomer, seedCart, fillStripeCard, CUSTOMER } from './helpers'
+import { clearState, loginAsCustomer, seedCart, fillStripeCard, gotoAndWaitForAuth, CUSTOMER } from './helpers'
 import type { CartItem } from '../../src/types/cart'
 
 // ---------------------------------------------------------------------------
@@ -59,9 +59,9 @@ test.beforeEach(async ({ page }) => {
 // ---------------------------------------------------------------------------
 test('TC-E2E-029 logged-in user skips checkout choice screen', async ({ page }) => {
   await loginAsCustomer(page)
-  await page.goto('/')
+  // seedCart while on /account (avoids an extra page.goto that consumes a refresh token)
   await seedCart(page, [SEEDED_ITEM])
-  await page.goto('/checkout')
+  await gotoAndWaitForAuth(page, '/checkout')
 
   // Should NOT see the choice screen
   await expect(page.getByText('How would you like to check out?')).not.toBeVisible({ timeout: 5_000 })
@@ -74,9 +74,8 @@ test('TC-E2E-029 logged-in user skips checkout choice screen', async ({ page }) 
 // ---------------------------------------------------------------------------
 test('TC-E2E-030 authenticated checkout shows username, no guest email field', async ({ page }) => {
   await loginAsCustomer(page)
-  await page.goto('/')
   await seedCart(page, [SEEDED_ITEM])
-  await page.goto('/checkout')
+  await gotoAndWaitForAuth(page, '/checkout')
 
   await expect(page.getByText('Shipping details')).toBeVisible({ timeout: 10_000 })
 
@@ -111,7 +110,8 @@ test('TC-E2E-031 guest cart items are present after login', async ({ page }) => 
 
   // Log in — cart (localStorage) should survive the login redirect
   await page.goto('/login')
-  await page.fill('#username', CUSTOMER.username)
+  await page.waitForSelector('#username')
+  await page.locator('#username').pressSequentially(CUSTOMER.username)
   await page.fill('#password', CUSTOMER.password)
   await page.click('button[type=submit]')
   await expect(page).toHaveURL(/\/account/, { timeout: 15_000 })
@@ -147,10 +147,10 @@ test('TC-E2E-032 cart items survive silent-refresh merge', async ({ page }) => {
 // TC-E2E-033 — Successful authenticated checkout → order in /account/orders
 // ---------------------------------------------------------------------------
 test('TC-E2E-033 successful authenticated checkout — order appears in /account/orders', async ({ page }) => {
+  test.setTimeout(90_000)
   await loginAsCustomer(page)
-  await page.goto('/')
   await seedCart(page, [SEEDED_ITEM])
-  await page.goto('/checkout')
+  await gotoAndWaitForAuth(page, '/checkout')
 
   await expect(page.getByText('Shipping details')).toBeVisible({ timeout: 10_000 })
 
@@ -173,9 +173,9 @@ test('TC-E2E-033 successful authenticated checkout — order appears in /account
   const orderId = url.searchParams.get('id')
   expect(orderId).toBeTruthy()
 
-  // Navigate to /account and look for the order
-  await page.goto('/account')
-  await expect(page.getByRole('heading', { name: 'Order history' })).toBeVisible()
+  // Navigate to /account; auth reinitialises on full page load so wait for refresh
+  await gotoAndWaitForAuth(page, '/account')
+  await expect(page.getByRole('heading', { name: 'Order history' })).toBeVisible({ timeout: 15_000 })
   // The order list shows Order #XXXXXXXX (last-8 of orderId, uppercase)
   const shortId = orderId!.slice(-8).toUpperCase()
   await expect(page.getByText(`Order #${shortId}`)).toBeVisible({ timeout: 10_000 })
@@ -185,10 +185,10 @@ test('TC-E2E-033 successful authenticated checkout — order appears in /account
 // TC-E2E-034 — Order detail page shows correct items, amount, status
 // ---------------------------------------------------------------------------
 test('TC-E2E-034 order detail page shows items, total, and status', async ({ page }) => {
+  test.setTimeout(90_000)
   await loginAsCustomer(page)
-  await page.goto('/')
   await seedCart(page, [SEEDED_ITEM])
-  await page.goto('/checkout')
+  await gotoAndWaitForAuth(page, '/checkout')
 
   await expect(page.getByText('Shipping details')).toBeVisible({ timeout: 10_000 })
   await page.fill('#line1', TEST_ADDRESS.line1)

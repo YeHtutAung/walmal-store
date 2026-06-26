@@ -6,7 +6,7 @@ config({ path: path.resolve(__dirname, '.env.test.local') })
 
 export default defineConfig({
   testDir: './tests/e2e',
-  timeout: 30_000,
+  timeout: 60_000,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,
@@ -36,7 +36,7 @@ export default defineConfig({
       stderr: 'pipe',
     },
     {
-      command: 'npm run dev',
+      command: 'npm run dev -- --webpack',
       url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       stdout: 'ignore',

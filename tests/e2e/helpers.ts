@@ -91,16 +91,34 @@ export async function fillStripeCard(
   },
 ) {
   const frame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
-  await frame.locator('[placeholder="Card number"]').click()
-  await page.keyboard.type(opts.number)
-  // Stripe auto-advances focus through all fields (card→expiry→CVC) — no Tab needed
-  await page.keyboard.type(opts.expiry)
-  await page.keyboard.type(opts.cvc)
+  const cardInput = frame.locator('[placeholder="Card number"]')
+  await cardInput.click()
+  // Use pressSequentially on the iframe locator so Firefox doesn't lose focus.
+  // Stripe auto-advances focus through all fields (card→expiry→CVC) — no Tab needed.
+  await cardInput.pressSequentially(opts.number + opts.expiry + opts.cvc, { delay: 20 })
 }
 
 // ---------------------------------------------------------------------------
 // Navigation helpers
 // ---------------------------------------------------------------------------
+
+/**
+ * Navigate to a URL and wait for the AuthProvider's silent-refresh API call to
+ * complete.  Using Promise.all ensures the listener is registered before
+ * navigation starts, so the /auth/refresh response is never missed.
+ *
+ * Avoids waitUntil:'networkidle' which is unreliable when the page contains
+ * Stripe's CardElement (Stripe keeps background connections open indefinitely).
+ */
+export async function gotoAndWaitForAuth(page: Page, url: string) {
+  await Promise.all([
+    page.waitForResponse(
+      (resp) => resp.url().includes('/auth/refresh'),
+      { timeout: 30_000 },
+    ),
+    page.goto(url),
+  ])
+}
 
 /** Wait for the auth provider's silent-refresh to settle (idle → guest|authenticated). */
 export async function waitForAuthReady(page: Page) {
@@ -110,7 +128,7 @@ export async function waitForAuthReady(page: Page) {
         const raw = localStorage.getItem('auth-storage')
         // Zustand persist key; if not present, auth store is still in-memory idle
         // and the AuthProvider useEffect has not run yet — wait a bit more.
-        return raw !== undefined
+        return raw !== null
       } catch {
         return false
       }

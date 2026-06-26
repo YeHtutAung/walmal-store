@@ -30,7 +30,7 @@ test('TC-E2E-021 register new account redirects to /account', async ({ page }) =
   await page.fill('#password', 'TestPass123!')
   await page.click('button[type=submit]')
   await expect(page).toHaveURL(/\/account/, { timeout: 15_000 })
-  await expect(page.getByRole('heading', { name: 'My account' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'My account' })).toBeVisible({ timeout: 15_000 })
 })
 
 // ---------------------------------------------------------------------------
