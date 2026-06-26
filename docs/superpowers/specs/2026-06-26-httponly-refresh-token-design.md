@@ -65,7 +65,7 @@ Browser ─── POST /api/auth/logout ───► Next.js route ─── cle
 |-----------|------------------------------------------|
 | Name      | `walmal-rt`                              |
 | HttpOnly  | `true`                                   |
-| Secure    | `true` in production, `false` in dev     |
+| Secure    | `process.env.NODE_ENV === 'production'`  |
 | SameSite  | `Strict`                                 |
 | Path      | `/api/auth`                              |
 | MaxAge    | `604800` (7 days, matching Spring token) |
@@ -77,10 +77,14 @@ Browser ─── POST /api/auth/logout ───► Next.js route ─── cle
 ## Modified Files
 
 ### `src/lib/api/auth.ts`
-- `loginApi(username, password)` → calls `/api/auth/login` (relative, not Spring directly)
-- `registerApi(email, password, username)` → calls `/api/auth/register`
-- `refreshApi()` (renamed, no token arg) → calls `/api/auth/refresh`
-- `logoutApi()` (new) → calls `/api/auth/logout`
+- All four functions use `fetch()` directly with a relative URL — **not** `apiClient`, which
+  has `baseURL = NEXT_PUBLIC_API_URL` (the Spring Boot URL). Using `apiClient` would prepend
+  the Spring URL and route the request to Spring instead of the Next.js proxy.
+- `loginApi(username, password)` → `fetch('/api/auth/login', { method:'POST', ... })`
+- `registerApi(email, password, username)` → `fetch('/api/auth/register', ...)`
+- `refreshApi()` (renamed, no token arg) → `fetch('/api/auth/refresh', ...)`
+- `logoutApi()` (new) → `fetch('/api/auth/logout', ...)`
+- All functions set `Content-Type: application/json` and parse the JSON response, throwing on non-2xx.
 
 ### `src/types/auth.ts`
 - `AuthResponse.refreshToken` removed (proxy strips it before responding to browser)
@@ -105,8 +109,10 @@ Browser ─── POST /api/auth/logout ───► Next.js route ─── cle
 
 - `src/middleware.ts` — presence cookie (`walmal-auth`) check unchanged
 - `src/app/api/v1/auth/*` — mock routes for dev-without-backend left as-is
-- `tests/e2e/helpers.ts` — `gotoAndWaitForAuth` filters `resp.url().includes('/auth/refresh')`;  
-  `/api/auth/refresh` (new proxy URL) still contains that substring — no change needed
+- `tests/e2e/helpers.ts` — `gotoAndWaitForAuth` filters `resp.url().includes('/auth/refresh')`;
+  `/api/auth/refresh` (new proxy URL) still contains that substring — no change needed.
+  `waitForAuthReady` reads `localStorage.getItem('auth-storage')`, which will always return
+  `null` after `persist` is removed. This helper is unused dead code; delete it from the file.
 - All other E2E tests
 
 ---
