@@ -15,15 +15,15 @@
 | Authentication & Tokens | 5 | 1 | refresh token still in localStorage (H3 deferred) |
 | Authorization (RBAC) | 6 | 0 | middleware added; mock routes protected; rate limiting added |
 | Input Validation & XSS | 6 | 0 | Open redirect fixed (1ca7da5) |
-| Sensitive Data Handling | 5 | 0 | payment-intent open for guest checkout by design; mitigated with per-IP rate limiting |
+| Sensitive Data Handling | 6 | 0 | payment-intent open for guest checkout by design; mitigated with per-IP rate limiting |
 | API Route Security | 6 | 0 | mock routes auth-protected; rate limiting added |
 | Session Management | 4 | 0 | proactive refresh timer added; exp check in refresh() |
-| Dependencies | 1 | 0 | 28 packages patched via npm audit fix; 2 postcss moderate in Next.js internals (not fixable without downgrade) |
+| Dependencies | 3 | 0 | 28 packages patched via npm audit fix; 2 postcss moderate in Next.js internals (not fixable without downgrade) |
 | Security Headers | 6 | 0 | All headers added (295fdf9) |
 | File Handling | N/A | N/A | No file uploads in this app |
-| Third-Party Integrations | 3 | 0 | Stripe integration correct |
+| Third-Party Integrations | 2 | 0 | Stripe integration correct (3P-03 N/A — no webhook endpoint) |
 
-**Overall: 42 PASS / 1 FAIL (deferred)**
+**Overall: 44 PASS / 1 FAIL (deferred)**
 
 > Deferred (not practical without major refactor):
 > - **AUTH-01/H3**: Move refresh token to httpOnly cookie — requires backend `/api/auth/set-cookie` route + Zustand cookie adapter + middleware rewrite
@@ -287,7 +287,7 @@ Add `Cross-Origin-Resource-Policy: same-origin` to the headers config in `next.c
 |-----------|--------|
 | No CRITICAL vulnerabilities | PASS — ZAP found 0 CRITICAL/HIGH automated alerts |
 | No HIGH vulnerabilities unaddressed | PASS — all HIGH npm vulns patched; 2 moderate postcss remain in Next.js internals |
-| Manual checklist all PASS | PASS — 42/43 items PASS; 1 deferred (AUTH-01: httpOnly cookie migration) |
+| Manual checklist all PASS | PASS — 44/45 items PASS; 1 deferred (AUTH-01: httpOnly cookie migration) |
 | Zero hardcoded secrets in code | PASS — All keys via `process.env` |
 | JWT stored securely (httpOnly cookie) | DEFERRED — Refresh token still in localStorage; httpOnly cookie migration is a major refactor |
 | RBAC enforced on all protected routes | PASS — `src/middleware.ts` redirects unauthenticated users server-side; mock routes return 401 |
