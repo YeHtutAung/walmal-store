@@ -296,11 +296,18 @@ First statements of `POST`, before `const body = await req.json()`:
   const rl = checkRateLimit(`login:${getClientIp(req)}`, LOGIN_LIMIT)
   if (!rl.allowed) {
     return NextResponse.json(
-      { error: 'Too many requests. Please try again later.' },
+      { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' },
       { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
     )
   }
 ```
+
+Note the body shape: the three auth proxy routes' locally generated errors use
+`{ code, message }` (the client `src/lib/api/auth.ts` reads `data?.code` /
+`data?.message`), so their 429 bodies are
+`{ code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' }`.
+Only `payment-intent` (Step 1) uses `{ error: ... }`, matching its existing
+400/500 shape.
 
 - [ ] **Step 3: register**
 
@@ -310,7 +317,7 @@ Same as Step 2 in `src/app/api/auth/register/route.ts`, with:
 import { checkRateLimit, getClientIp, REGISTER_LIMIT } from '@/lib/rate-limit'
 ```
 
-and key/config `` `register:${getClientIp(req)}` ``, `REGISTER_LIMIT`.
+and key/config `` `register:${getClientIp(req)}` ``, `REGISTER_LIMIT` (429 body: `{ code: 'RATE_LIMITED', message: ... }` as in Step 2).
 
 - [ ] **Step 4: refresh**
 
@@ -320,7 +327,7 @@ Same pattern in `src/app/api/auth/refresh/route.ts`, with:
 import { checkRateLimit, getClientIp, REFRESH_LIMIT } from '@/lib/rate-limit'
 ```
 
-and key/config `` `refresh:${getClientIp(req)}` ``, `REFRESH_LIMIT` — the guard goes BEFORE `const refreshToken = req.cookies.get('walmal-rt')?.value`.
+and key/config `` `refresh:${getClientIp(req)}` ``, `REFRESH_LIMIT` (429 body: `{ code: 'RATE_LIMITED', message: ... }` as in Step 2) — the guard goes BEFORE `const refreshToken = req.cookies.get('walmal-rt')?.value`.
 
 - [ ] **Step 5: E2E env overrides**
 

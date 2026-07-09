@@ -78,6 +78,13 @@ if (!rl.allowed) {
 
 (Route prefix and config vary per file: `login`/`LOGIN_LIMIT`, etc.)
 
+Response-body convention (correction found in code review): the three auth proxy
+routes' locally generated errors use `{ code, message }` (e.g. `NO_COOKIE`,
+`UPSTREAM_UNAVAILABLE`), and the client (`src/lib/api/auth.ts`) reads
+`data?.code` / `data?.message`. Their 429 body is therefore
+`{ code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' }`.
+Only `payment-intent` uses `{ error: ... }`, matching its existing 400/500 shape.
+
 ### Test environment
 
 `.env.test.local` adds:
