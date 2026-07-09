@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe'
+import { checkRateLimit, getClientIp, PAYMENT_INTENT_LIMIT } from '@/lib/rate-limit'
 
 const SUPPORTED_CURRENCIES = new Set(['usd', 'eur', 'gbp', 'sgd', 'myr'])
 
 export async function POST(req: NextRequest) {
+  const rl = checkRateLimit(`payment-intent:${getClientIp(req)}`, PAYMENT_INTENT_LIMIT)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
+    )
+  }
   try {
     const body = await req.json()
     const { amount, currency, metadata = {} } = body

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit, getClientIp, LOGIN_LIMIT } from '@/lib/rate-limit'
 
 // NOTE: Uses NEXT_PUBLIC_API_URL as the proxy target. In production, prefer a
 // server-only env var (e.g. SPRING_INTERNAL_URL) if the Spring URL is a private VPC address.
@@ -6,6 +7,13 @@ const SPRING_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api
 const SECURE = process.env.NODE_ENV === 'production'
 
 export async function POST(req: NextRequest) {
+  const rl = checkRateLimit(`login:${getClientIp(req)}`, LOGIN_LIMIT)
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
+    )
+  }
   const body = await req.json()
   let upstream: Response
   try {
