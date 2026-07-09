@@ -99,8 +99,10 @@ RATE_LIMIT_REFRESH=100000
 ### Error handling
 
 - Limiter never throws; env parsing failures silently fall back to defaults.
-- 429 responses are plain JSON `{ error }` — the existing `client.ts` /
-  fetch error paths surface the message unchanged.
+- 429 responses are plain JSON per each route's convention (`{ error }` on
+  payment-intent, `{ code, message }` on the auth proxies — see Route
+  integration above); the existing client error paths surface the message
+  unchanged.
 - Counters reset on server restart (accepted for in-memory design).
 
 ## Testing
