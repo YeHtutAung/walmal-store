@@ -14,21 +14,40 @@ export default defineConfig({
   workers: 1,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:3001',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     actionTimeout: 15_000,
   },
   // Two servers: Spring Boot backend + Next.js frontend.
-  // The backend entry starts Docker Compose infrastructure and the Spring Boot JAR.
-  // reuseExistingServer:true for the backend so warm restarts reuse a running instance.
+  //
+  // Backend: activates the "test" Spring profile so application-test.yml is
+  // loaded, giving effectively-unlimited rate limits (100 000 req/min) so
+  // sequential E2E requests never hit a 429.  reuseExistingServer:true lets
+  // warm restarts skip the 3-minute JAR startup.  A pre-running server that
+  // was NOT started with the test profile (e.g. a dev or k6 session on :8080)
+  // is detected by global-setup via the /actuator/info profile marker and the
+  // run fails fast with instructions, instead of flaking with 429s mid-suite.
+  //
+  // Frontend: always starts a FRESH Next.js process on port 3001
+  // (reuseExistingServer:false) so the STRIPE_SECRET_KEY from .env.test.local
+  // is guaranteed to be in the subprocess environment.  Using port 3001 avoids
+  // colliding with a dev server on the default port 3000.
   webServer: [
     {
       command: [
         'docker compose -f ../walmal/docker-compose.yml up -d --wait',
         'postgres redis rabbitmq minio mailhog',
         '&&',
-        'java -Dwalmal.rate-limit.unauthenticated-limit=300 -jar ../walmal/walmal-app/target/walmal-app-0.1.0-SNAPSHOT.jar',
+        // -Dspring.profiles.active=test loads application-test.yml from the JAR:
+        // effectively-unlimited rate limits, CORS incl. port 3001, and the
+        // info.walmal.profile=test marker that global-setup verifies before any
+        // test runs.  The test profile is the single source of truth — no
+        // redundant -D overrides, so a stale JAR fails fast instead of being
+        // silently masked.  Rebuild with:
+        //   cd ../walmal && ./mvnw -pl walmal-app -am -DskipTests clean package
+        'java -Dspring.profiles.active=test',
+        '-jar ../walmal/walmal-app/target/walmal-app-0.1.0-SNAPSHOT.jar',
       ].join(' '),
       url: 'http://localhost:8080/actuator/info',
       reuseExistingServer: true,
@@ -37,9 +56,11 @@ export default defineConfig({
       stderr: 'pipe',
     },
     {
-      command: 'npm run dev -- --webpack',
-      url: 'http://localhost:3000',
-      reuseExistingServer: !process.env.CI,
+      command: 'npm run dev -- --port 3001',
+      url: 'http://localhost:3001',
+      // Never reuse: a running dev server has .env.local placeholder Stripe keys.
+      // A fresh process started here receives the real test keys via env: below.
+      reuseExistingServer: false,
       stdout: 'ignore',
       stderr: 'pipe',
       env: {
