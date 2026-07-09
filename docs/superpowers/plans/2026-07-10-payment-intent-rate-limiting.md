@@ -235,7 +235,7 @@ export function getClientIp(req: NextRequest): string {
 - [ ] **Step 4: Run tests to verify they pass**
 
 Run: `npx vitest run tests/lib/rate-limit.test.ts`
-Expected: PASS — 8 tests.
+Expected: PASS — 7 tests.
 
 - [ ] **Step 5: Run the full unit suite to check for regressions**
 
@@ -394,7 +394,7 @@ In `tests/security/FRONTEND_CHECKLIST.md`. Do NOT touch anything related to AUTH
 
 Detail rows:
 - **SENS-06** row (line ~85): change status **FAIL** → **PASS (mitigated)**; replace the remediation text with: "Intentionally unauthenticated for guest checkout; mitigated by per-IP rate limiting (10 req/min, `src/lib/rate-limit.ts`) per docs/superpowers/specs/2026-07-10-payment-intent-rate-limiting-design.md."
-- **API-03** row (line ~95): change status **FAIL** → **PASS**; replace the remediation text with: "In-memory per-IP fixed-window limits on payment-intent (10/min), login (5/min), register (3/min), refresh (20/min); env-overridable, 100k in `.env.test.local`."
+- **API-03** row (line ~95): change status **FAIL** → **PASS**; replace the remediation text with: "In-memory per-IP fixed-window limits on payment-intent (10/min), login (5/min), register (3/min), refresh (20/min); env-overridable, 100k in `.env.test.local`. Per-IP keying trusts `x-forwarded-for` — effective only when a reverse proxy overwrites that header; direct-to-node deployments share one bucket."
 
 Summary table (lines 13–26). WARNING: some existing PASS/FAIL counts are stale relative to the detail rows below them. After making the two detail-row changes above, recount each affected section's detail rows and set the summary numbers from the recount (do not just decrement):
 - **Sensitive Data Handling** row (line ~18): recount section 4; expected `5 | 0`. Note → "payment-intent open for guest checkout by design; mitigated with per-IP rate limiting".
