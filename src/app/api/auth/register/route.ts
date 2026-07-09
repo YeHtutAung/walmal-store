@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   const rl = checkRateLimit(`register:${getClientIp(req)}`, REGISTER_LIMIT)
   if (!rl.allowed) {
     return NextResponse.json(
-      { error: 'Too many requests. Please try again later.' },
+      { code: 'RATE_LIMITED', message: 'Too many requests. Please try again later.' },
       { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } }
     )
   }
