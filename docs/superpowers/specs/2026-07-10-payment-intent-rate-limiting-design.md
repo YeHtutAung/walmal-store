@@ -36,7 +36,9 @@ Four Next.js API routes accept unauthenticated POSTs with no rate limiting:
   - Fixed-window counter in a module-level `Map<string, { count: number; resetAt: number }>`
   - First request in a window sets `resetAt = now + windowMs`, `count = 1`; subsequent
     requests increment; `count > limit` → `allowed: false`,
-    `retryAfter` = seconds until `resetAt` (ceiling, min 1)
+    `retryAfter` = seconds until `resetAt` (ceiling, min 1). Example: `limit: 10`
+    allows requests 1–10; request 11 is the first rejection.
+  - When `allowed` is `true`, `retryAfter` is `0`
   - Never throws
 - Key format: `"<route>:<ip>"` — routes never share buckets
 - Lazy cleanup: when the map size exceeds 10,000 entries, sweep expired entries during
@@ -44,19 +46,23 @@ Four Next.js API routes accept unauthenticated POSTs with no rate limiting:
 - `getClientIp(req: NextRequest): string` — first entry of `x-forwarded-for` (trimmed),
   else `x-real-ip`, else `'unknown'`. Direct-connection clients (local dev) share the
   `'unknown'` bucket; acceptable for a single instance behind a proxy in production.
-- Exported per-route configs, parsed once at module load from env with fallback to
-  defaults on missing/malformed values (`Number.isFinite` and `> 0` check):
+- Exported per-route configs are `RateLimitConfig` objects with
+  `windowMs: 60_000` baked in for all routes. The `limit` field is parsed once at
+  module load from env, falling back to the default on missing/malformed values
+  (`Number.isFinite` and `> 0` check):
 
-| Config export | Env var | Default (req/min) |
+| Config export (`RateLimitConfig`) | `limit` env var | Default limit (per 60s) |
 |---|---|---|
 | `PAYMENT_INTENT_LIMIT` | `RATE_LIMIT_PAYMENT_INTENT` | 10 |
 | `LOGIN_LIMIT` | `RATE_LIMIT_LOGIN` | 5 |
 | `REGISTER_LIMIT` | `RATE_LIMIT_REGISTER` | 3 |
 | `REFRESH_LIMIT` | `RATE_LIMIT_REFRESH` | 20 |
 
-Window is fixed at 60 000 ms for all routes.
-
 ### Route integration (4 files modified)
+
+The four route handlers already use the default Node.js runtime (no
+`export const runtime` present). The `Map`-based limiter relies on this — do not
+switch any of these routes to the edge runtime.
 
 At the top of each `POST` handler, before any body parsing or upstream call:
 
