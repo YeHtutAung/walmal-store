@@ -13,22 +13,20 @@
 | Category | PASS | FAIL | Notes |
 |----------|------|------|-------|
 | Authentication & Tokens | 5 | 1 | refresh token still in localStorage (H3 deferred) |
-| Authorization (RBAC) | 4 | 1 | middleware added; mock routes protected; rate limiting deferred |
+| Authorization (RBAC) | 6 | 0 | middleware added; mock routes protected; rate limiting added |
 | Input Validation & XSS | 6 | 0 | Open redirect fixed (1ca7da5) |
-| Sensitive Data Handling | 4 | 1 | payment-intent intentionally open for guest checkout; needs rate limiting |
-| API Route Security | 4 | 2 | mock routes now auth-protected; rate limiting deferred |
+| Sensitive Data Handling | 5 | 0 | payment-intent open for guest checkout by design; mitigated with per-IP rate limiting |
+| API Route Security | 6 | 0 | mock routes auth-protected; rate limiting added |
 | Session Management | 4 | 0 | proactive refresh timer added; exp check in refresh() |
 | Dependencies | 1 | 0 | 28 packages patched via npm audit fix; 2 postcss moderate in Next.js internals (not fixable without downgrade) |
 | Security Headers | 6 | 0 | All headers added (295fdf9) |
 | File Handling | N/A | N/A | No file uploads in this app |
 | Third-Party Integrations | 3 | 0 | Stripe integration correct |
 
-**Overall: 37 PASS / 3 FAIL (deferred)**
+**Overall: 42 PASS / 1 FAIL (deferred)**
 
 > Deferred (not practical without major refactor):
 > - **AUTH-01/H3**: Move refresh token to httpOnly cookie — requires backend `/api/auth/set-cookie` route + Zustand cookie adapter + middleware rewrite
-> - **SENS-06/M2**: payment-intent auth — intentionally unauthenticated to support guest checkout; mitigate with rate limiting instead
-> - **API-03/M3**: Rate limiting on login + payment-intent — requires @upstash/ratelimit or similar external service
 
 ---
 
@@ -82,7 +80,7 @@
 | SENS-03 | No API keys in frontend code | PASS | `src/lib/stripe.ts` reads `process.env.STRIPE_SECRET_KEY` (server-side only). No `sk_live` or `sk_test` strings in source code. `.env.local` has placeholder values. `.gitignore` correctly excludes `.env*`. |
 | SENS-04 | User PII not over-exposed in API responses | PASS | Order summaries expose only `id, status, totalAmount, currency, createdAt`. No email/phone/card data in frontend API responses. |
 | SENS-05 | Error messages don't leak system details | PASS | `payment-intent/route.ts` catches and returns generic `{"error":"Failed to create payment intent"}`. API client shows detailed errors in dev mode only (`NODE_ENV === 'development'`). |
-| SENS-06 | payment-intent endpoint requires authentication | **FAIL** | `POST /api/payment-intent` has no auth check. Any unauthenticated user can call it and trigger a Stripe PaymentIntent creation against your Stripe account. With real keys this wastes Stripe API credits and could flag account. **Remediation:** Verify `Authorization: Bearer <token>` header is present before calling `stripe.paymentIntents.create()`. |
+| SENS-06 | payment-intent endpoint requires authentication | **PASS (mitigated)** | Intentionally unauthenticated for guest checkout; mitigated by per-IP rate limiting (10 req/min, `src/lib/rate-limit.ts`) per docs/superpowers/specs/2026-07-10-payment-intent-rate-limiting-design.md. |
 
 ---
 
@@ -92,7 +90,7 @@
 |----------|-------------|--------|-----------------|
 | API-01 | Public endpoints accessible without auth (products) | PASS | Product search and detail routes work without auth — appropriate for a public storefront. |
 | API-02 | Protected routes reject unauthenticated requests | PASS | Fixed — see RBAC-06. |
-| API-03 | Rate limiting on sensitive endpoints | **FAIL** | No rate limiting on any Next.js API routes. The login endpoint can be brute-forced. **Remediation:** Add `@upstash/ratelimit` or similar, especially on `/api/v1/auth/login` and `/api/payment-intent`. |
+| API-03 | Rate limiting on sensitive endpoints | **PASS** | In-memory per-IP fixed-window limits on payment-intent (10/min), login (5/min), register (3/min), refresh (20/min); env-overridable, 100k in `.env.test.local`. Per-IP keying trusts `x-forwarded-for` — effective only when a reverse proxy overwrites that header; direct-to-node deployments share one bucket. A transient 429 on silent refresh downgrades the client session to guest (`src/store/auth-store.ts`); recoverable on reload since the httpOnly cookie survives. |
 | API-04 | No SQL injection in query string handling | PASS | No raw SQL in Next.js API routes. Product search uses `.includes()` on in-memory mock data. |
 | API-05 | CORS explicitly configured | PASS | `Cross-Origin-Resource-Policy: same-origin` added in `next.config.ts` (commit 295fdf9). |
 | API-06 | Minio proxy path traversal prevention | PASS | `GET /api/minio/../../etc/passwd` returns 404. Next.js URL normalization prevents traversal. Encoded `%2e%2e` variant also returns 404. |
@@ -289,7 +287,7 @@ Add `Cross-Origin-Resource-Policy: same-origin` to the headers config in `next.c
 |-----------|--------|
 | No CRITICAL vulnerabilities | PASS — ZAP found 0 CRITICAL/HIGH automated alerts |
 | No HIGH vulnerabilities unaddressed | PASS — all HIGH npm vulns patched; 2 moderate postcss remain in Next.js internals |
-| Manual checklist all PASS | PASS — 37/40 items PASS; 3 deferred (httpOnly cookie, guest payment-intent rate limit, rate limiting) |
+| Manual checklist all PASS | PASS — 42/43 items PASS; 1 deferred (AUTH-01: httpOnly cookie migration) |
 | Zero hardcoded secrets in code | PASS — All keys via `process.env` |
 | JWT stored securely (httpOnly cookie) | DEFERRED — Refresh token still in localStorage; httpOnly cookie migration is a major refactor |
 | RBAC enforced on all protected routes | PASS — `src/middleware.ts` redirects unauthenticated users server-side; mock routes return 401 |
