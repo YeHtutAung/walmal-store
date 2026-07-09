@@ -162,6 +162,10 @@ export function parseLimit(envValue: string | undefined, fallback: number): numb
   return Number.isFinite(n) && n > 0 ? n : fallback
 }
 
+// The configs below are parsed ONCE at module load. Changing process.env
+// afterwards (e.g. in a test beforeEach) has no effect; tests pass explicit
+// RateLimitConfig objects instead.
+
 export const PAYMENT_INTENT_LIMIT: RateLimitConfig = {
   limit: parseLimit(process.env.RATE_LIMIT_PAYMENT_INTENT, 10),
   windowMs: WINDOW_MS,
@@ -359,7 +363,7 @@ Start the dev server (production default limits apply because `.env.development`
 npm run dev
 ```
 
-Wait for "Ready", then in another shell send 11 rapid empty-body POSTs (the guard runs before body validation, so each returns 400 until the limit trips — Stripe is never called):
+Wait for "Ready", then in another shell send 11 rapid empty-body POSTs (the guard runs before body validation, so each returns 400 until the limit trips — Stripe is never called). Cygwin caveat: the `{}` body below is safe as-is, but if you ever change the body, note that `!` characters inside `-d '...'` get mangled by this shell — write such bodies to a file and use `--data-binary @file` instead:
 
 ```bash
 for i in $(seq 1 11); do curl -s -o /dev/null -w "%{http_code} " -X POST http://localhost:3000/api/payment-intent -H "Content-Type: application/json" -d '{}'; done; echo
@@ -386,10 +390,21 @@ Expected: **96 passed**. If any auth/checkout test fails with a 429, the `.env.t
 
 - [ ] **Step 3: Update the security checklist**
 
-In `tests/security/FRONTEND_CHECKLIST.md`:
+In `tests/security/FRONTEND_CHECKLIST.md`. Do NOT touch anything related to AUTH-01 — it is out of scope for this plan even if it looks stale.
+
+Detail rows:
 - **SENS-06** row (line ~85): change status **FAIL** → **PASS (mitigated)**; replace the remediation text with: "Intentionally unauthenticated for guest checkout; mitigated by per-IP rate limiting (10 req/min, `src/lib/rate-limit.ts`) per docs/superpowers/specs/2026-07-10-payment-intent-rate-limiting-design.md."
 - **API-03** row (line ~95): change status **FAIL** → **PASS**; replace the remediation text with: "In-memory per-IP fixed-window limits on payment-intent (10/min), login (5/min), register (3/min), refresh (20/min); env-overridable, 100k in `.env.test.local`."
-- Update the summary table rows (lines ~16-19) and the deferred-items note (lines ~30-31) and the final scorecard line (~292) to reflect that rate limiting is done: 39/40 PASS, with only AUTH-01 wording removed if it is already resolved — ONLY touch AUTH-01 text if the checklist still lists it as deferred AND the httpOnly-cookie refactor note is accurate; otherwise leave AUTH-01 untouched.
+
+Summary table (lines 13–26). WARNING: some existing PASS/FAIL counts are stale relative to the detail rows below them. After making the two detail-row changes above, recount each affected section's detail rows and set the summary numbers from the recount (do not just decrement):
+- **Sensitive Data Handling** row (line ~18): recount section 4; expected `5 | 0`. Note → "payment-intent open for guest checkout by design; mitigated with per-IP rate limiting".
+- **API Route Security** row (line ~19): recount section 5; expected `6 | 0` if API-03 was its only FAIL. Note → "mock routes auth-protected; rate limiting added".
+- **Authorization (RBAC)** row (line ~16): recount section 2 (its detail rows may already be all PASS — the `4 | 1` was stale). Note → drop "rate limiting deferred".
+- **Overall** line (~26): recompute total PASS/FAIL from the updated summary rows (AUTH-01 remains the only intentional FAIL from this plan's perspective).
+
+Deferred-items note (lines 28–31): delete the **SENS-06/M2** and **API-03/M3** bullets (both now resolved); keep the AUTH-01 bullet unchanged.
+
+Final scorecard line (~292): update the "Manual checklist" row to the new totals, listing AUTH-01 as the remaining deferred item.
 
 - [ ] **Step 4: Commit**
 
