@@ -41,3 +41,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local tooling (machine-specific, not project code)
+.claude/settings.local.json
+/logs
+scripts/docker-cleanup.ps1
