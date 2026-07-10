@@ -4,7 +4,7 @@
 
 - Config: `vitest.config.ts` — jsdom environment, globals enabled, `@` alias → `./src`.
 - Setup file: `tests/setup.ts`.
-- Test files: `tests/**/*.test.ts` (excludes `tests/e2e/**`).
+- Test discovery: no explicit `include` — Vitest default pattern, with `tests/e2e/**` excluded.
 - 8 test files covering: `auth-store`, `cart-store`, `rate-limit`, `api/client`, `api/auth`, `api/orders`, `api/products`, `api/payment-intent/route`.
 - Run command: `npx vitest run`
 

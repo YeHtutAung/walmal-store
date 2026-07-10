@@ -4,7 +4,7 @@
 
 ## Next.js Version Warning
 
-This codebase may use APIs that differ from training-data knowledge. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices. (Full rule: `AGENTS.md`.)
+See `AGENTS.md` — read `node_modules/next/dist/docs/` before writing Next.js code.
 
 ## API Client (`src/lib/api/client.ts`)
 

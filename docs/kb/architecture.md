@@ -10,7 +10,7 @@
 | `(shop)/products/` | `/products`, `/products/[slug]` |
 | `(checkout)/cart/` | `/cart` |
 | `(checkout)/checkout/` | `/checkout` |
-| `(account)/account/` | `/account`, `/account/orders` — middleware-guarded |
+| `(account)/account/` | `/account`, `/account/orders/[id]` — middleware-guarded |
 | `login/` | `/login` |
 | `register/` | `/register` |
 | `order-confirmation/` | `/order-confirmation` |
