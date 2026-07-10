@@ -12,7 +12,7 @@
 
 | Category | PASS | FAIL | Notes |
 |----------|------|------|-------|
-| Authentication & Tokens | 5 | 1 | refresh token still in localStorage (H3 deferred) |
+| Authentication & Tokens | 6 | 0 | refresh token moved to httpOnly cookie (3335217) |
 | Authorization (RBAC) | 6 | 0 | middleware added; mock routes protected; rate limiting added |
 | Input Validation & XSS | 6 | 0 | Open redirect fixed (1ca7da5) |
 | Sensitive Data Handling | 6 | 0 | payment-intent open for guest checkout by design; mitigated with per-IP rate limiting |
@@ -23,10 +23,7 @@
 | File Handling | N/A | N/A | No file uploads in this app |
 | Third-Party Integrations | 2 | 0 | Stripe integration correct (3P-03 N/A — no webhook endpoint) |
 
-**Overall: 44 PASS / 1 FAIL (deferred)**
-
-> Deferred (not practical without major refactor):
-> - **AUTH-01/H3**: Move refresh token to httpOnly cookie — requires backend `/api/auth/set-cookie` route + Zustand cookie adapter + middleware rewrite
+**Overall: 45 PASS / 0 FAIL**
 
 ---
 
@@ -36,7 +33,7 @@
 
 | Check ID | Description | Status | Evidence / Notes |
 |----------|-------------|--------|-----------------|
-| AUTH-01 | JWT stored in httpOnly cookie (not localStorage) | **FAIL** | `refreshToken` stored in `localStorage` via Zustand persist (key: `auth-storage`, `partialize: (state) => ({ refreshToken: state.refreshToken })`). Access token is in-memory only (good), but refresh token in localStorage is exposed to XSS. **Remediation:** Move refresh token to httpOnly cookie via a `/api/auth/set-cookie` server route. |
+| AUTH-01 | JWT stored in httpOnly cookie (not localStorage) | **PASS** | Resolved in commit 3335217 (httpOnly cookie refactor): refresh token never reaches client JS — `/api/auth/login\|register\|refresh` proxy routes strip `refreshToken` from the upstream response and store it in the `walmal-rt` cookie (`httpOnly: true`, `secure` in prod, `sameSite: 'strict'`, `path: '/api/auth'`). `auth-store.ts` has no Zustand persist; access token is in-memory only. No `localStorage`/`refreshToken` references remain in client code. |
 | AUTH-02 | Token expiry validated on client | PASS | `auth-store.ts:refresh()` now checks `exp` before issuing a new refresh request — skips if token has >5 min remaining. Proactive 50-min refresh interval set in `providers.tsx` so long-lived sessions never use expired tokens. |
 | AUTH-03 | Refresh token rotation on login | PASS | `providers.tsx` → `attemptSilentRefresh()` fetches new access + refresh tokens on page load. Both mock routes and real Spring Boot backend issue new refresh tokens on each refresh call. |
 | AUTH-04 | Token not leaked in network logs, error messages, or console | PASS | No `console.log(token)` in source. API error interceptor (`client.ts:35`) only fires in `development` mode and logs HTTP status + response data, not the Authorization header value. |
@@ -208,9 +205,9 @@ poweredByHeader: false,
 npm audit fix
 ```
 
-**H3 — Move refresh token to httpOnly cookie (AUTH-01)**
+**H3 — Move refresh token to httpOnly cookie (AUTH-01)** — RESOLVED (commit 3335217)
 
-Add `src/app/api/auth/set-cookie/route.ts` that sets `Set-Cookie: refresh_token=...; HttpOnly; Secure; SameSite=Strict; Path=/api/auth/refresh`. Update `auth-store.ts` to no longer persist `refreshToken` via Zustand.
+Implemented via auth proxy routes (`/api/auth/login|register|refresh`) that set the `walmal-rt` httpOnly cookie, rather than a separate `set-cookie` route. `auth-store.ts` no longer persists anything.
 
 **H4 — Fix open redirect in login/register (XSS-06)**
 
@@ -287,8 +284,8 @@ Add `Cross-Origin-Resource-Policy: same-origin` to the headers config in `next.c
 |-----------|--------|
 | No CRITICAL vulnerabilities | PASS — ZAP found 0 CRITICAL/HIGH automated alerts |
 | No HIGH vulnerabilities unaddressed | PASS — all HIGH npm vulns patched; 2 moderate postcss remain in Next.js internals |
-| Manual checklist all PASS | PASS — 44/45 items PASS; 1 deferred (AUTH-01: httpOnly cookie migration) |
+| Manual checklist all PASS | PASS — 45/45 items PASS |
 | Zero hardcoded secrets in code | PASS — All keys via `process.env` |
-| JWT stored securely (httpOnly cookie) | DEFERRED — Refresh token still in localStorage; httpOnly cookie migration is a major refactor |
+| JWT stored securely (httpOnly cookie) | PASS — Refresh token in httpOnly `walmal-rt` cookie (commit 3335217); access token in-memory only |
 | RBAC enforced on all protected routes | PASS — `src/middleware.ts` redirects unauthenticated users server-side; mock routes return 401 |
 | Stripe integration secure (no card data logged) | PASS — CardElement used correctly |
