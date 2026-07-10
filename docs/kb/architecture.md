@@ -1,6 +1,6 @@
 # walmal-store — Architecture
 
-> Cross-repo facts (ports, auth contract, env vars, error bodies): `walmal/docs/kb/SYSTEM.md`.
+> Cross-repo facts (ports, auth contract, env vars, error bodies): `../walmal/docs/kb/SYSTEM.md`.
 
 ## Page Routes (`src/app/`)
 
@@ -22,7 +22,7 @@
 - `POST /api/auth/register` — rate-limited (3/min); same cookie pattern as login.
 - `POST /api/auth/refresh` — rate-limited (20/min); reads `walmal-rt` cookie, calls Spring `/auth/refresh`, rotates cookie, returns new `accessToken`.
 - `POST /api/auth/logout` — clears `walmal-rt` cookie; proxies to Spring `/auth/logout`.
-- Full auth contract (token TTL, roles, storage strategy): see `walmal/docs/kb/SYSTEM.md`.
+- Full auth contract (token TTL, roles, storage strategy): see `../walmal/docs/kb/SYSTEM.md`.
 
 ### Other routes
 - `POST /api/payment-intent` — rate-limited (10/min); calls Stripe SDK server-side; requires `STRIPE_SECRET_KEY`; returns `{ clientSecret }` or `{ error }`.

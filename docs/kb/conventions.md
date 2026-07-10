@@ -1,6 +1,6 @@
 # walmal-store — Conventions
 
-> Error-body shape definitions (ProblemDetail, `{ code, message }`, `{ error }`): `walmal/docs/kb/SYSTEM.md`.
+> Error-body shape definitions (ProblemDetail, `{ code, message }`, `{ error }`): `../walmal/docs/kb/SYSTEM.md`.
 
 ## Next.js Version Warning
 

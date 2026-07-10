@@ -20,7 +20,7 @@
 **Backend** (`reuseExistingServer: true`):
 - Starts Docker services (postgres, redis, rabbitmq, minio, mailhog) then Spring JAR with `-Dspring.profiles.active=test`.
 - JAR: `../walmal/walmal-app/target/walmal-app-0.1.0-SNAPSHOT.jar`; health URL: `http://localhost:8080/actuator/info`; startup timeout: 180s.
-- Test profile gives 100k req/min rate limits and CORS for `:3001`. See `walmal/docs/kb/SYSTEM.md` for profile details.
+- The test profile lifts rate limits and adds the E2E origin to CORS — values live in `../walmal/docs/kb/SYSTEM.md` (Test profile).
 - Rebuild after backend config changes: `cd ../walmal && ./mvnw -pl walmal-app -am -DskipTests clean package`
 
 **Frontend** (`reuseExistingServer: false`):
@@ -48,4 +48,4 @@ Also resets inventory stock for seeded test variants to 500 units (3 browsers ×
 
 ### Test Credentials
 
-Defined in `walmal-app/src/main/resources/db/migration/V12__auth_add_test_accounts.sql` (source of truth). See `walmal/docs/kb/SYSTEM.md` for pointer.
+Defined in `../walmal/walmal-app/src/main/resources/db/migration/V12__auth_add_test_accounts.sql` (source of truth). See `../walmal/docs/kb/SYSTEM.md` for pointer.
