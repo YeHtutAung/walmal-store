@@ -11,11 +11,15 @@ the live backend rather than mocks.
 
 - **Guest and registered checkout** — `/checkout` offers "Continue as guest"
   or sign-in; guest orders capture email + shipping address inline.
+- **Variant selection + catalog browsing** — product detail pages list
+  active variants as selectable pills; "Add to cart" stays disabled until
+  one is chosen.
+
+  ![Product detail with a variant selected](docs/images/product.png)
+
 - **Stripe CardElement payments (test mode)** — `checkout-form.tsx` requests
   a `clientSecret` from `POST /api/payment-intent`, then confirms the card
   payment client-side via `stripe.confirmCardPayment`.
-
-  ![Product detail](docs/images/product.png)
 
   ![Checkout with Stripe CardElement](docs/images/checkout.png)
 
@@ -67,10 +71,13 @@ npm run dev
 
 ## Tests
 
-96 Playwright tests (32 unique specs × chromium/firefox/webkit) run against
+96 Playwright tests (32 unique tests × chromium/firefox/webkit) run against
 the real backend — no mocks. `playwright.config.ts` auto-boots the backend
 (Docker services + a test-profile Spring Boot JAR on `:8080`) and a fresh
 Next.js instance on `:3001` loaded with real Stripe test keys.
+
+The frontend security checklist is 45/45 PASS, tracked in
+[`tests/security/FRONTEND_CHECKLIST.md`](tests/security/FRONTEND_CHECKLIST.md).
 
 ```bash
 npx playwright test
