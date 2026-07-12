@@ -20,3 +20,6 @@ cross-repo commit atomicity is not required.
 **Review check:** every code review must answer: "Does this change require a
 KB update, and was it made?" Refactors and test-only changes that alter no
 documented fact need none.
+
+If a change alters a fact claimed in `README.md`, update the README in the
+same commit (README numbers mirror `docs/kb/` — the KB copy is canonical).
