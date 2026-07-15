@@ -21,7 +21,7 @@
 - `POST /api/auth/login` — rate-limited (5/min); proxies to Spring `/auth/login`; strips `refreshToken` from response body, sets httpOnly `walmal-rt` cookie (`path=/api/auth`, 7-day) + `walmal-auth` presence cookie server-side (avoids Chromium IPC race — see `gotchas.md`); returns `{ accessToken, ... }` to client.
 - `POST /api/auth/register` — rate-limited (3/min); same cookie pattern as login.
 - `POST /api/auth/refresh` — rate-limited (20/min); reads `walmal-rt` cookie, calls Spring `/auth/refresh`, rotates cookie, returns new `accessToken`.
-- `POST /api/auth/logout` — clears `walmal-rt` cookie; proxies to Spring `/auth/logout`.
+- `POST /api/auth/logout` — **local only. Does NOT proxy to Spring.** The whole route expires the `walmal-rt` cookie (`maxAge: 0`) and returns 200; unlike the three routes above, it makes no upstream call. **The refresh token therefore stays valid server-side until its own TTL expires** — logout drops the browser's copy, it does not revoke. Anything relying on server-side revocation at logout (session invalidation, "sign out everywhere", post-incident lockout) is **not implemented**. Do not read this line as a security control; it is a client-side cookie clear.
 - Full auth contract (token TTL, roles, storage strategy): see `../walmal/docs/kb/SYSTEM.md`.
 
 ### Other routes
