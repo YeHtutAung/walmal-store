@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice">
+  <rect width="800" height="460" fill="#17171b"/>
+  <polygon points="0,340 800,290 800,460 0,460" fill="#101d16" opacity="0.9"/>
+  <!-- goal frame with net -->
+  <g transform="translate(330,60)">
+    <rect x="0" y="0" width="400" height="16" rx="6" fill="#f4f4f2"/>
+    <rect x="0" y="0" width="16" height="280" rx="6" fill="#f4f4f2"/>
+    <rect x="384" y="0" width="16" height="280" rx="6" fill="#f4f4f2"/>
+    <g stroke="#f4f4f2" stroke-opacity="0.28" stroke-width="3">
+      <line x1="16" y1="50" x2="384" y2="50"/>
+      <line x1="16" y1="105" x2="384" y2="105"/>
+      <line x1="16" y1="160" x2="384" y2="160"/>
+      <line x1="16" y1="215" x2="384" y2="215"/>
+      <line x1="70" y1="16" x2="70" y2="270"/>
+      <line x1="130" y1="16" x2="130" y2="270"/>
+      <line x1="190" y1="16" x2="190" y2="270"/>
+      <line x1="250" y1="16" x2="250" y2="270"/>
+      <line x1="310" y1="16" x2="310" y2="270"/>
+    </g>
+  </g>
+  <!-- match ball -->
+  <g transform="translate(230,300)">
+    <circle cx="0" cy="0" r="78" fill="#f4f4f2"/>
+    <polygon points="0,-30 29,-9 18,25 -18,25 -29,-9" fill="#141418"/>
+    <g fill="#141418" opacity="0.85">
+      <polygon points="-53,-47 -22,-61 -11,-36 -36,-22"/>
+      <polygon points="53,-47 22,-61 11,-36 36,-22"/>
+      <polygon points="47,42 61,14 36,6 28,33"/>
+      <polygon points="-47,42 -61,14 -36,6 -28,33"/>
+    </g>
+  </g>
+</svg>

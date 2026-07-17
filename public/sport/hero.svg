@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1200" preserveAspectRatio="xMidYMid slice">
+  <!-- Night pitch scene with player silhouette — sits under a left-dark gradient overlay -->
+  <rect width="1920" height="1200" fill="#111114"/>
+  <!-- pitch plane -->
+  <polygon points="0,760 1920,640 1920,1200 0,1200" fill="#101d16"/>
+  <polygon points="0,760 1920,640 1920,700 0,816" fill="#132419"/>
+  <!-- pitch markings -->
+  <g stroke="#f4f4f2" stroke-opacity="0.16" fill="none" stroke-width="6">
+    <line x1="240" y1="1200" x2="900" y2="700"/>
+    <line x1="1750" y1="1200" x2="1310" y2="690"/>
+    <ellipse cx="1080" cy="960" rx="420" ry="130"/>
+    <line x1="0" y1="880" x2="1920" y2="770"/>
+  </g>
+  <!-- floodlight beams -->
+  <polygon points="1500,0 1780,0 1400,760 1240,760" fill="#f4f4f2" opacity="0.035"/>
+  <polygon points="1180,0 1380,0 1120,720 1000,720" fill="#f4f4f2" opacity="0.03"/>
+  <!-- red speed stripes -->
+  <polygon points="1920,120 1920,240 1180,860 1120,760" fill="#e0281b" opacity="0.55"/>
+  <polygon points="1920,330 1920,410 1330,900 1280,830" fill="#e0281b" opacity="0.3"/>
+  <!-- player silhouette: striking pose -->
+  <g transform="translate(1150,330)">
+    <!-- trailing leg -->
+    <polygon points="120,330 60,470 90,486 170,352" fill="#1a1a1f"/>
+    <polygon points="52,462 96,478 82,516 30,502" fill="#141418"/>
+    <!-- kicking leg -->
+    <polygon points="150,330 300,420 286,462 128,372" fill="#1a1a1f"/>
+    <polygon points="292,414 342,436 330,478 278,458" fill="#141418"/>
+    <!-- torso -->
+    <polygon points="96,140 210,152 196,340 92,332" fill="#e0281b"/>
+    <!-- shirt stripe -->
+    <polygon points="140,144 168,146 158,338 132,336" fill="#141418"/>
+    <!-- arms -->
+    <polygon points="100,160 20,260 48,286 130,196" fill="#1a1a1f"/>
+    <polygon points="200,160 288,120 300,152 214,200" fill="#1a1a1f"/>
+    <!-- head -->
+    <circle cx="160" cy="96" r="42" fill="#1a1a1f"/>
+  </g>
+  <!-- ball -->
+  <g transform="translate(1568,836)">
+    <circle cx="0" cy="0" r="56" fill="#f4f4f2"/>
+    <polygon points="0,-22 21,-7 13,18 -13,18 -21,-7" fill="#141418"/>
+    <g fill="#141418" opacity="0.85">
+      <polygon points="-38,-34 -16,-44 -8,-26 -26,-16"/>
+      <polygon points="38,-34 16,-44 8,-26 26,-16"/>
+      <polygon points="34,30 44,10 26,4 20,24"/>
+      <polygon points="-34,30 -44,10 -26,4 -20,24"/>
+    </g>
+  </g>
+  <!-- motion arcs behind ball -->
+  <g stroke="#e0281b" fill="none" stroke-width="10" opacity="0.6">
+    <path d="M1370,900 Q1460,850 1520,856"/>
+    <path d="M1396,952 Q1480,904 1536,908" opacity="0.5"/>
+  </g>
+</svg>

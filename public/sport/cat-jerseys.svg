@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice">
+  <rect width="800" height="460" fill="#17171b"/>
+  <polygon points="560,0 800,0 800,460 380,460" fill="#1f6f6b" opacity="0.16"/>
+  <circle cx="140" cy="90" r="130" fill="#1f6f6b" opacity="0.1"/>
+  <!-- teal jersey -->
+  <g transform="translate(240,60)">
+    <path d="M110 20 L70 32 L10 96 L60 156 L96 128 L96 320 L224 320 L224 128 L260 156 L310 96 L250 32 L210 20 Q192 52 160 52 Q128 52 110 20 Z" fill="#1f6f6b"/>
+    <!-- sleeve trim -->
+    <polygon points="10,96 60,156 76,142 30,80" fill="#f4f4f2"/>
+    <polygon points="310,96 260,156 244,142 290,80" fill="#f4f4f2"/>
+    <!-- collar -->
+    <path d="M110 20 Q140 60 160 60 Q180 60 210 20 L196 12 Q176 40 160 40 Q144 40 124 12 Z" fill="#f4f4f2"/>
+    <!-- chest stripe -->
+    <rect x="96" y="180" width="128" height="20" fill="#f4f4f2" opacity="0.85"/>
+    <!-- crest -->
+    <circle cx="128" cy="112" r="14" fill="#e0a615"/>
+  </g>
+</svg>

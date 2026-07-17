@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice">
+  <rect width="800" height="460" fill="#17171b"/>
+  <polygon points="0,0 300,0 120,460 0,460" fill="#e0281b" opacity="0.1"/>
+  <ellipse cx="400" cy="368" rx="280" ry="30" fill="#0c0c0e"/>
+  <!-- red boot side profile -->
+  <g transform="translate(210,120)">
+    <path d="M20 220 Q10 184 44 164 L164 106 Q218 78 246 38 L328 33 Q348 106 343 176 L336 220 Z" fill="#e0281b"/>
+    <path d="M246 38 L328 33 Q339 72 339 110 L262 117 Q249 78 246 38 Z" fill="#141418"/>
+    <rect x="9" y="220" width="340" height="20" rx="9" fill="#f4f4f2"/>
+    <g fill="#141418">
+      <rect x="44" y="240" width="18" height="22" rx="5"/>
+      <rect x="121" y="240" width="18" height="22" rx="5"/>
+      <rect x="198" y="240" width="18" height="22" rx="5"/>
+      <rect x="275" y="240" width="18" height="22" rx="5"/>
+    </g>
+    <g stroke="#f4f4f2" stroke-width="6" opacity="0.9">
+      <line x1="142" y1="118" x2="186" y2="96"/>
+      <line x1="164" y1="133" x2="208" y2="111"/>
+      <line x1="186" y1="148" x2="230" y2="126"/>
+    </g>
+  </g>
+</svg>

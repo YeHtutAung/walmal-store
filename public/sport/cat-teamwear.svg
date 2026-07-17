@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 460" preserveAspectRatio="xMidYMid slice">
+  <rect width="800" height="460" fill="#17171b"/>
+  <polygon points="0,300 800,180 800,460 0,460" fill="#22304a" opacity="0.22"/>
+  <!-- navy polo -->
+  <g transform="translate(150,80)">
+    <path d="M80 16 L50 26 L6 74 L44 118 L70 98 L70 250 L166 250 L166 98 L192 118 L230 74 L186 26 L156 16 Q142 42 118 42 Q94 42 80 16 Z" fill="#22304a"/>
+    <path d="M80 16 Q104 48 118 48 Q132 48 156 16 L144 8 Q130 32 118 32 Q106 32 92 8 Z" fill="#f4f4f2"/>
+    <rect x="70" y="98" width="8" height="152" fill="#e0281b" opacity="0.9"/>
+  </g>
+  <!-- training pants -->
+  <g transform="translate(430,80)">
+    <rect x="20" y="0" width="180" height="34" rx="8" fill="#141418"/>
+    <path d="M20 34 L104 34 L96 300 L34 300 Z" fill="#22304a"/>
+    <path d="M116 34 L200 34 L186 300 L124 300 Z" fill="#22304a"/>
+    <rect x="30" y="270" width="70" height="30" rx="6" fill="#141418"/>
+    <rect x="122" y="270" width="68" height="30" rx="6" fill="#141418"/>
+    <line x1="96" y1="60" x2="88" y2="270" stroke="#e0281b" stroke-width="6"/>
+    <line x1="124" y1="60" x2="132" y2="270" stroke="#e0281b" stroke-width="6"/>
+  </g>
+</svg>

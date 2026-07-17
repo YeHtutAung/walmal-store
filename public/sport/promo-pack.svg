@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 680" preserveAspectRatio="xMidYMid slice">
+  <!-- Boot pair on dark — sits under a right-dark gradient overlay, art left of center -->
+  <rect width="1360" height="680" fill="#141418"/>
+  <polygon points="0,0 520,0 160,680 0,680" fill="#17171b"/>
+  <polygon points="120,0 220,0 -40,680 -140,680" fill="#e0281b" opacity="0.14"/>
+  <ellipse cx="480" cy="560" rx="420" ry="52" fill="#0c0c0e"/>
+  <!-- back boot: gold/black -->
+  <g transform="translate(430,240) scale(1.05)">
+    <path d="M18 200 Q10 168 40 150 L150 96 Q200 70 226 34 L300 30 Q318 96 314 160 L308 200 Z" fill="#1c1c22"/>
+    <path d="M226 34 L300 30 Q310 66 310 100 L240 106 Q228 70 226 34 Z" fill="#e0a615"/>
+    <rect x="8" y="200" width="310" height="18" rx="8" fill="#e0a615"/>
+    <g fill="#141418">
+      <rect x="40" y="218" width="16" height="20" rx="4"/>
+      <rect x="110" y="218" width="16" height="20" rx="4"/>
+      <rect x="180" y="218" width="16" height="20" rx="4"/>
+      <rect x="250" y="218" width="16" height="20" rx="4"/>
+    </g>
+    <g stroke="#e0a615" stroke-width="5" opacity="0.85">
+      <line x1="130" y1="108" x2="170" y2="88"/>
+      <line x1="150" y1="122" x2="190" y2="102"/>
+      <line x1="170" y1="136" x2="210" y2="116"/>
+    </g>
+  </g>
+  <!-- front boot: chaos red -->
+  <g transform="translate(200,300)">
+    <path d="M18 200 Q10 168 40 150 L150 96 Q200 70 226 34 L300 30 Q318 96 314 160 L308 200 Z" fill="#e0281b"/>
+    <path d="M226 34 L300 30 Q310 66 310 100 L240 106 Q228 70 226 34 Z" fill="#141418"/>
+    <rect x="8" y="200" width="310" height="18" rx="8" fill="#f4f4f2"/>
+    <g fill="#141418">
+      <rect x="40" y="218" width="16" height="20" rx="4"/>
+      <rect x="110" y="218" width="16" height="20" rx="4"/>
+      <rect x="180" y="218" width="16" height="20" rx="4"/>
+      <rect x="250" y="218" width="16" height="20" rx="4"/>
+    </g>
+    <g stroke="#f4f4f2" stroke-width="5" opacity="0.9">
+      <line x1="130" y1="108" x2="170" y2="88"/>
+      <line x1="150" y1="122" x2="190" y2="102"/>
+      <line x1="170" y1="136" x2="210" y2="116"/>
+    </g>
+  </g>
+</svg>
