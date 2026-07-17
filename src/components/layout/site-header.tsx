@@ -81,7 +81,7 @@ export function SiteHeader({ onOpenCart }: SiteHeaderProps = {}) {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className="label-caps border-b-2 border-transparent pb-0.5 text-[13.5px] text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+                  className="label-caps whitespace-nowrap border-b-2 border-transparent pb-0.5 text-[13.5px] text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
                 >
                   {link.label}
                 </Link>

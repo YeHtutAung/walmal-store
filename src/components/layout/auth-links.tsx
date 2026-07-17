@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/use-auth'
 // "Register" (/register); authenticated → "Hi, {username}" (/account) +
 // "Sign out" button calling logout. Restyle freely; never rename.
 const HEADER_LINK_CLASS =
-  'font-label text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground'
+  'font-label whitespace-nowrap text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground'
 const HEADER_REGISTER_CLASS =
   'font-label rounded-[10px] border border-border px-3.5 py-2 text-[13px] font-semibold text-foreground transition-colors hover:border-primary'
 const MENU_LINK_CLASS = 'transition-colors hover:text-foreground'

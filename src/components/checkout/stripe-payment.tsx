@@ -51,8 +51,8 @@ export function StripePayment({ clientSecret, onSuccess, disabled }: StripePayme
           options={{
             hidePostalCode: true,
             style: {
-              base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } },
-              invalid: { color: '#9e2146' },
+              base: { fontSize: '16px', color: '#f4f4f2', iconColor: '#9a9a9f', '::placeholder': { color: '#9a9a9f' } },
+              invalid: { color: '#e0281b' },
             },
           }}
         />
