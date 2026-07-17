@@ -337,6 +337,19 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 
 ---
 
+### Task A4: k6/perf docs refresh (walmal) — added by Phase A quality review
+
+- [ ] `tests/performance/product.load.js:23` — replace dead `SEARCH_TERMS` (galaxy/iphone/…) with sports vocabulary matching the V17 catalog (e.g. velocity, jersey, boot, harbour, ball, polo, walmal, '').
+- [ ] `tests/performance/helpers.js:17-32` — rename stale identifiers (S24_256_BLK, GALAXY_S24, …) to sports names; UUIDs unchanged.
+- [ ] `tests/performance/README.md:103` — fix the stale catalog row. Commit in walmal.
+
+### Task A5: walmal-admin fixture/KB fixes — added by Phase A quality review
+
+- [ ] `walmal-admin/tests/e2e/search.spec.ts:23` — fixture asserts "Galaxy S24" for `?q=galaxy`; retarget to the sports catalog (e.g. `?q=velocity` → "Velocity"). 
+- [ ] `walmal-admin/tests/e2e/products-crud.spec.ts:55` — category select relies on Electronics/Apparel ordering; re-verify against the flattened 6-root tree (4 active sports + 2 deactivated still listed) and fix index/label selection.
+- [ ] `walmal-admin/docs/kb/testing.md:52,56` — stale "Galaxy S24 Ultra" seeded-catalog claims → V17 facts (same commit).
+- [ ] Run the affected admin E2E specs against the V17 backend (port 8080; never simultaneously with the store suite) and confirm green. Commit in walmal-admin.
+
 # PHASE B — Storefront (walmal-store repo)
 
 ### Task B1: Fonts + design tokens
