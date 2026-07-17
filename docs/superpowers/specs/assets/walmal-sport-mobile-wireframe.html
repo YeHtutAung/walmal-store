@@ -1,0 +1,82 @@
+<!-- Walmal Sport mobile wireframe — exported 2026-07-17 from Claude Design
+     project "Walmart store UI improvements" (file: Walmal Sport Mobile.dc.html).
+     390px frame. Reference for pixel values ONLY. Only the HOME screen, chrome
+     (header/drawer/bottom tabs), and SAVED screen are in scope for the reskin;
+     the Shop and Bag screens here are follow-up work. -->
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+<!-- frame: width 390px, bg #0c0c0e, color #f4f4f2, min-height 844px -->
+
+<!-- ANNOUNCEMENT: bg #e0281b white 10.5px ls .05em uppercase w700 padding 7px 12px Archivo -->
+
+<!-- MOBILE HEADER: sticky top z-40 bg rgba(12,12,14,.94) blur(10px) border-bottom #1e1e22.
+     Row padding 13px 16px gap 14px:
+       hamburger: 3 bars 24px wide, 2px high, #f4f4f2, gap 4px, last bar 70% width
+       logo centered flex-1: Anton 21px uppercase "WALMAL" white + "SPORT" #e0281b
+       heart button 18px (#9a9a9f idle, #e0281b when has saves) with count badge
+         (absolute -6px/-8px, bg #e0281b white radius 20px min-w 15px h 15px 8.5px w800)
+     Search row (home + shop screens only), padding 0 16px 12px:
+       bg #17171b border #26262c radius 11px padding 11px 13px, input 14px,
+       placeholder "Search jerseys, boots, teams" -->
+
+<!-- HOME HERO: height 460px bg #111114, image cover,
+     overlay linear-gradient(180deg, rgba(10,10,12,.15) 30%, rgba(10,10,12,.55) 62%, rgba(10,10,12,.96)).
+     Text bottom-anchored, padding 24px 20px 26px gap 14px:
+       eyebrow Archivo 11px w800 ls .12em uppercase #e0281b "26/27 Season Drop"
+       h1 Anton 56px lh .88 uppercase "Own<br>the pitch."
+       p 14px lh 1.5 #cfcfd6
+       CTAs stacked full-width gap 10px: [Shop new arrivals] bg #e0281b padding 15px radius 11px Archivo 13.5px w800 uppercase;
+         [Shop boots] bg rgba(255,255,255,.08) border rgba(255,255,255,.28) -->
+
+<!-- CATEGORY CHIPS: horizontal rail (scrollbar hidden), gap 10px, padding 18px 16px 6px.
+     Chip: radius 22px padding 10px 18px Archivo 12.5px w800 uppercase;
+       idle bg #17171b border #26262c text #c9c9cf; active bg/border #e0281b white.
+     Chips: All, Boots, Jerseys, Equipment (+Teamwear). -->
+
+<!-- NEW ARRIVALS: padding 20px 16px 6px. h2 Anton 26px uppercase; "All →" Archivo 11px w800 #9a9a9f.
+     Rail: gap 13px scroll-snap, hidden scrollbar. Card: width 200px white radius 13px.
+       Image aspect 1/1 bg #f1f1ee; "New" badge 9.5px; heart button top-right 32px circle bg rgba(255,255,255,.92)
+         (color #c8c8c4 idle / #e0281b saved).
+       Body padding 12px 12px 14px: brand 10px caps #9a9a9f; name 13.5px w700 min-h 34px;
+       row: price Anton 17px | Add bg #0c0c0e white radius 8px padding 8px 12px 10.5px caps. -->
+
+<!-- PROMO: padding 22px 16px 6px. Panel height 300px radius 16px bg #141418,
+     overlay linear-gradient(180deg, rgba(10,10,12,.1), rgba(10,10,12,.9)), text bottom padding 20px:
+       "Limited release" 10.5px caps #e0281b; "The Velocity<br>Elite Pack" Anton 34px lh .9;
+       [Shop the pack] bg white text dark padding 12px 22px radius 10px 12px caps. -->
+
+<!-- BEST SELLERS: padding 24px 16px 6px, heading Anton 26px. Grid 2 cols gap 13px.
+     Card: white radius 13px; badge 9px; heart 30px circle; body padding 11px:
+       brand 9.5px caps; name 12.5px w700 min-h 30px; price Anton 16px | Add 10px caps padding 7px 11px. -->
+
+<!-- TRUST: padding 26px 16px 8px; column list gap 16px, border top+bottom #1e1e22 padding 22px 0.
+     Item: red rotated square 11px + title Archivo 13px w800 caps + sub 12.5px #9a9a9f. -->
+
+<!-- FOOTER (mobile): padding 24px 16px 110px, centered: logo Anton 19px;
+     socials row gap 16px 12px #6b6b73; © 11.5px #4b4b52 margin-top 16px. -->
+
+<!-- STICKY BOTTOM TAB BAR: sticky bottom z-35 bg rgba(12,12,14,.96) blur(10px) border-top #1e1e22,
+     grid 4 cols, padding 9px 6px 12px. Tab: icon 19px + label Archivo 9.5px w700 caps;
+     active: white label, full opacity; idle: #8a8a90, opacity .62, grayscale .4.
+     Count badge above label: bg #e0281b white radius 20px min-w 16px h 16px 9px w800.
+     Tabs: Home ⌂ | Shop ⚽ | Saved ♥ (badge=saved count) | Bag 🛍 (badge=cart count). -->
+
+<!-- MENU DRAWER (hamburger): fixed overlay rgba(0,0,0,.6); panel left, width 300px max 82%,
+     bg #101013 border-right #1e1e22, padding 20px 22px.
+     Top: logo Anton 22px + close × (#c9c9cf 26px).
+     Nav items: Anton 26px uppercase #f4f4f2, padding 13px 0, border-bottom #1a1a1e
+       (Shop All, Jerseys, Boots, Teamwear, Equipment, Saved, Bag).
+     Bottom (margin-top auto, gap 12px): Account, Store locations, Help & returns — Archivo 13px w600 #c9c9cf. -->
+
+<!-- SAVED SCREEN: h1 "Saved" Anton 34px + sub 13px #8a8a90 ("N items saved for later" / "Your wishlist").
+     Row list: padding 16px 0 border-top #1a1a1e; image 80px radius 11px;
+       brand 9.5px caps #9a9a9f; name 14px w700 white; price Anton 17px;
+       [Add to bag] bg #e0281b radius 9px padding 9px 16px 10.5px caps + "Remove" underline 12px #6b6b73.
+     Empty state (padding 70px 30px centered): 64px circle border #26262c heart #3a3a42;
+       "Nothing saved yet" Anton 24px; p 13.5px #8a8a90 "Tap the heart on any product to keep it here for later.";
+       [Start shopping] bg #e0281b radius 11px padding 14px 26px 12.5px caps. -->
+
+</body>
+</html>

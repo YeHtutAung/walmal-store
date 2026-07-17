@@ -1,0 +1,95 @@
+<!-- Walmal Sport desktop homepage wireframe — exported 2026-07-17 from Claude Design
+     project "Walmart store UI improvements" (file: Walmal Sport.dc.html).
+     Template syntax: sc-if / sc-for / {{ prop }} are design-tool constructs; image-slot
+     elements mark where real imagery goes. Reference for pixel values ONLY. -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#0c0c0e;color:#f4f4f2;font-family:'Public Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:#f4f4f2;text-decoration:none}
+  ::selection{background:#e0281b;color:#fff}
+</style>
+</head>
+<body>
+<!-- Design props: accent=#e0281b, accentHover=color-mix(in srgb, #e0281b 82%, #000),
+     announcementText="Free local delivery over $80  ·  Worldwide shipping available" -->
+
+<div style="min-width:1080px;background:#0c0c0e">
+
+  <!-- ANNOUNCEMENT -->
+  <div style="background:#e0281b;color:#fff;text-align:center;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:9px 20px;font-family:'Archivo',sans-serif">Free local delivery over $80 · Worldwide shipping available</div>
+
+  <!-- HEADER: sticky top, z-50, background rgba(12,12,14,.9), backdrop-filter saturate(1.4) blur(12px), border-bottom 1px #1e1e22.
+       Inner: max-width 1360px, padding 16px 32px, flex gap 30px.
+       Logo: Anton 26px letter-spacing .04em uppercase, "WALMAL" white + "SPORT" #e0281b.
+       Nav links (Jerseys/Boots/Teamwear/Equipment/Lifestyle/Sale): Archivo 13.5px w700 uppercase ls .03em #c9c9cf,
+         2px transparent bottom border; hover: white text + #e0281b bottom border.
+       Search: flex-1 max-width 320px margin-left auto, bg #17171b border #26262c radius 10px padding 10px 14px,
+         placeholder "Search jerseys, boots, teams", input 13.5px #f4f4f2; focus-within border #3a3a42.
+       Right: wishlist heart button (18px, #6b6b73 idle / #e0281b active), "Account" link (Archivo 13px w600 #c9c9cf),
+         Bag button: bg #e0281b white radius 10px padding 10px 16px, Archivo 12.5px w800 uppercase ls .04em,
+         white pill count badge (min-width 19px h 19px radius 20px, 11px w800 dark text). Hover: darkened accent. -->
+
+  <!-- HERO: height 600px, bg #111114, full-bleed image, overlay gradient
+       linear-gradient(90deg, rgba(10,10,12,.92) 0%, rgba(10,10,12,.6) 42%, rgba(10,10,12,.05) 78%).
+       Content: max-width 1360 padding 0 32px; text block max-width 560px, gap 20px:
+         eyebrow "26/27 Season Drop" Archivo 13px w800 ls .14em uppercase #e0281b
+         h1 "Own<br>the pitch." Anton 88px line-height .9 uppercase white
+         p 17px lh 1.5 #cfcfd6 max-width 420px: "The latest match kits, elite boots and training gear — built for players who don't clock off."
+         CTAs gap 13px: [Shop new arrivals] bg #e0281b white padding 15px 30px radius 11px Archivo 14px w800 uppercase ls .05em
+                        [Shop boots] bg rgba(255,255,255,.08) border 1px rgba(255,255,255,.28) white; hover bg rgba(255,255,255,.16) -->
+
+  <!-- CATEGORY TILES: max-width 1360 padding 28px 32px 8px; grid 4 cols gap 16px.
+       Tile: height 230px radius 14px overflow hidden bg #17171b, image cover,
+         overlay linear-gradient(180deg, rgba(10,10,12,.05), rgba(10,10,12,.82)),
+         bottom-left (20px/18px): name Anton 26px uppercase white; "Shop now →" Archivo 12px w700 uppercase #e0281b margin-top 5px.
+       Categories: Jerseys, Boots, Teamwear, Equipment. -->
+
+  <!-- NEW ARRIVALS RAIL: max-width 1360 padding 44px 32px 8px.
+       Heading row (margin-bottom 22px): h2 "New Arrivals" Anton 38px uppercase white; "View all →" Archivo 13px w800 uppercase #c9c9cf (hover #e0281b).
+       Rail: flex gap 18px overflow-x auto padding-bottom 14px scroll-snap-x; scrollbar thumb #2a2a30 h 8px.
+       Card: flex-none width 270px, WHITE bg, radius 14px, overflow hidden, hover translateY(-4px) (.18s).
+         Image: aspect 1/1 bg #f1f1ee; "New" badge top-left 12px: bg #e0281b white Archivo 10.5px w800 uppercase padding 5px 9px radius 6px.
+         Body padding 15px 15px 17px, color #0c0c0e:
+           brand Archivo 11px w800 uppercase #9a9a9f
+           name 15px w700 mt 4px lh 1.25 min-height 38px
+           row mt 10px: price Anton 19px | Add button bg #0c0c0e white radius 9px padding 9px 14px Archivo 11.5px w800 uppercase (hover bg #e0281b) -->
+
+  <!-- PROMO BANNER: max-width 1360 margin 36px auto 8px padding 0 32px.
+       Panel: height 340px radius 18px bg #141418, image cover,
+         overlay linear-gradient(90deg, rgba(10,10,12,.05), rgba(10,10,12,.55) 55%, rgba(10,10,12,.9)).
+       Right-aligned text (padding 0 48px, max-width 480px, gap 14px):
+         "Limited release" Archivo 12.5px w800 ls .12em uppercase #e0281b
+         "The Velocity<br>Elite Pack" Anton 48px lh .92 uppercase white
+         p 15px #cfcfd6 max-width 340px: "Featherweight speed boots engineered for the counter-attack. Only while stocks last."
+         [Shop the pack] bg white text #0c0c0e padding 14px 28px radius 11px Archivo 13.5px w800 uppercase; hover bg #e0281b white -->
+
+  <!-- BEST SELLERS GRID: max-width 1360 padding 44px 32px 8px; heading like New Arrivals ("Best Sellers").
+       Grid 4 cols gap 18px; card = same white card as rail plus:
+         optional badge top-left: bg #0c0c0e white ("Best seller" / "Authentic" / "-15%")
+         stars row: #e0a615 12px ls 1px + "(1.4k)" 11.5px #9a9a9f
+         price/Add row pushed to bottom (margin-top auto, padding-top 10px). 8 products. -->
+
+  <!-- TRUST BAR: max-width 1360 margin 44px auto 0 padding 0 32px.
+       Grid 3 cols gap 20px, border-top+bottom 1px #1e1e22, padding 32px 0.
+       Item: red rotated square 12px (#e0281b, rotate 45deg) + title Archivo 14px w800 uppercase white + sub 13px #9a9a9f.
+       Items: Free local delivery / On every order above $80, shipped next day;
+              Worldwide shipping / We deliver match-day gear across the globe;
+              Secure payment / All major methods, encrypted at checkout. -->
+
+  <!-- FOOTER: max-width 1360 padding 52px 32px 40px; grid 1.5fr 1fr 1fr 1.2fr gap 40px.
+       Col 1 (max-width 300px): logo Anton 24px; p 13.5px #9a9a9f "Kit up. Play more. Get match-day drops and 10% off your first order.";
+         newsletter: input (border #2a2a30 bg #141418 radius 10px padding 11px 13px 13.5px) + [Join] bg #e0281b radius 10px Archivo 12px w800 uppercase.
+       Link cols: title Archivo 12px w800 uppercase white; links 13.5px #9a9a9f hover white.
+         Shop: Jerseys, Boots, Teamwear, Equipment, Sale
+         Help: Track order, Returns, Size guide, Contact us
+         Stores: Flagship — Downtown, Riverside Mall, Airport Terminal, Stadium Pop-up
+       Bottom bar: border-top 1px #1e1e22, padding 20px 32px, © 12.5px #6b6b73 left, socials (Instagram/Facebook/TikTok) right. -->
+
+</div>
+</body>
+</html>
