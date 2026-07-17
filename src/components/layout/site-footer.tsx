@@ -50,10 +50,34 @@ function FooterLinkColumn({
 export function SiteFooter() {
   return (
     <footer className="border-t border-border bg-background">
-      <div className="mx-auto max-w-[1360px] px-4 py-10 md:px-8 md:py-[52px]">
-        <div className="grid grid-cols-1 gap-10 text-center md:grid-cols-[1.5fr_1fr_1fr_1.2fr] md:text-left">
+      {/* Mobile (<md): minimal footer per the mobile wireframe — logo, socials
+          row, © only. The link columns and newsletter are md+ only. */}
+      <div className="flex flex-col items-center px-4 py-6 md:hidden">
+        <Link href="/" className="display-heading text-[19px] text-foreground">
+          WALMAL<span className="text-primary">SPORT</span>
+        </Link>
+        <ul className="mt-3 flex items-center gap-4">
+          {SOCIAL_LINKS.map((social) => (
+            <li key={social}>
+              <Link
+                href="#"
+                className="text-[12px] text-[#6b6b73] transition-colors hover:text-foreground"
+              >
+                {social}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 text-[11.5px] text-[#4b4b52]">
+          © 2026 Walmal Sport. All rights reserved.
+        </p>
+      </div>
+
+      {/* Desktop (md+): 4-column grid per the desktop wireframe. */}
+      <div className="mx-auto hidden max-w-[1360px] px-8 pb-10 pt-[52px] md:block">
+        <div className="grid grid-cols-[1.5fr_1fr_1fr_1.2fr] gap-10">
           {/* Brand column */}
-          <div className="flex flex-col items-center gap-4 md:max-w-[300px] md:items-start">
+          <div className="flex max-w-[300px] flex-col items-start gap-4">
             <Link href="/" className="display-heading text-[24px] text-foreground">
               WALMAL<span className="text-primary">SPORT</span>
             </Link>
@@ -80,8 +104,8 @@ export function SiteFooter() {
         </div>
       </div>
 
-      <div className="border-t border-border">
-        <div className="mx-auto flex max-w-[1360px] flex-col-reverse items-center gap-3 px-4 py-5 md:flex-row md:justify-between md:px-8">
+      <div className="hidden border-t border-border md:block">
+        <div className="mx-auto flex max-w-[1360px] items-center justify-between px-8 py-5">
           <p className="text-[12.5px] text-[#6b6b73]">
             © 2026 Walmal Sport. All rights reserved.
           </p>
