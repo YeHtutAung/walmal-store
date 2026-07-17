@@ -34,7 +34,16 @@ function SearchForm({ className = '' }: { className?: string }) {
   )
 }
 
-export function SiteHeader() {
+interface SiteHeaderProps {
+  /**
+   * When provided (e.g. by the (shop) layout, which owns a single shared
+   * CartDrawer), the Bag button calls this and the header renders no drawer
+   * of its own. When absent the header stays self-contained.
+   */
+  onOpenCart?: () => void
+}
+
+export function SiteHeader({ onOpenCart }: SiteHeaderProps = {}) {
   const [cartOpen, setCartOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
@@ -97,7 +106,7 @@ export function SiteHeader() {
 
               <AuthLinks variant="header" />
 
-              <CartIconButton onClick={() => setCartOpen(true)} />
+              <CartIconButton onClick={onOpenCart ?? (() => setCartOpen(true))} />
             </div>
           </div>
 
@@ -144,7 +153,7 @@ export function SiteHeader() {
           )}
         </div>
       </header>
-      <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+      {!onOpenCart && <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />}
       <MobileMenu open={menuOpen} onOpenChange={setMenuOpen} />
     </>
   )
