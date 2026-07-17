@@ -107,10 +107,13 @@ require minimal functional support on `/products` that does not exist today:
 - `?q=<q>` — already supported; unchanged.
 - `?category=<slug>` — NEW. The listing page resolves slug → categoryId by
   fetching the category tree (`GET /product/categories`) and matching on
-  slug, then loads products via
+  slug **among `active: true` nodes only** (after V17 the tree still
+  contains the deactivated Electronics/Apparel roots — the tree endpoint
+  does not filter on `is_active`), then loads products via
   `GET /product/categories/{categoryId}/products`. No hardcoded category
-  UUIDs in the frontend. Unknown slug → fall back to the unfiltered listing.
-  No other listing-page changes (layout/UI untouched beyond inherited theme).
+  UUIDs in the frontend. Unknown or inactive slug → fall back to the
+  unfiltered listing. No other listing-page changes (layout/UI untouched
+  beyond inherited theme).
 3. **New Arrivals rail** — horizontal scroll, 6 newest real products,
    white tiles, red "New" badge, brand/name/price, Add button.
 4. **Promo banner** — static "The Velocity Elite Pack" limited-release
@@ -132,9 +135,10 @@ wireframe honestly to sized products.
 ### Migration `V17__reseed_sports_catalog.sql`
 
 - **UPDATE in place** (same UUIDs, same prices):
-  - Categories: V9 seeds a two-level tree — 2 parents (Electronics
-    `c0..-01`, Clothing `c0..-02`) and 4 children (Smartphones, Laptops,
-    T-Shirts, Jeans). V17 renames the 4 child rows to the sports taxonomy
+  - Categories: the seed data forms a two-level tree — V3 seeds 2 parents
+    (Electronics `c0..-01`, Apparel `c0..-02`); V9 seeds 4 children
+    (Smartphones, Laptops, T-Shirts, Jeans). V17 renames the 4 child rows
+    to the sports taxonomy
     (Jerseys, Boots, Teamwear, Equipment — slugs `jerseys`, `boots`,
     `teamwear`, `equipment`), re-parents them to root
     (`parent_id = NULL`), and deactivates the 2 parent rows
@@ -149,7 +153,9 @@ wireframe honestly to sized products.
       $1,419.99
     k6 scripts reference variants only by UUID, which is why they need no
     changes.
-- **INSERT ~10 new products** across the 4 categories at design prices
+- **INSERT ≥9 new products** (homepage needs 14 ACTIVE products to fill
+  6 New Arrivals + 8 Best Sellers; 5 exist — short rails render gracefully
+  regardless) across the 4 categories at design prices
   (jerseys $115–189, boots $319–449, match ball $79, shinguards $45 …),
   with size variants, stock rows at the default location, idempotent
   `ON CONFLICT DO NOTHING`.
@@ -182,6 +188,12 @@ The work spans two repos with a real ordering constraint: the backend reseed
 can show real sports data. The implementation plan should split into
 separately executable phases — backend reseed first, then store frontend —
 each independently verifiable.
+
+**Reseed verification caveat:** the category tree is cached in Redis for
+30 minutes (`product:category:tree`) and a Flyway migration does not evict
+it. The backend phase's verification must flush that key (or restart Redis)
+after migrating, or the old Electronics/Apparel tree will be served and
+misread as "reseed didn't work".
 
 ## Docs / KB (maintenance rule)
 
