@@ -81,6 +81,7 @@ export function CheckoutForm() {
           quantity: i.quantity,
         })),
         shippingAddress: address as ShippingAddress,
+        paymentReference: paymentIntentId,
         ...(mode === 'guest' && guestEmail ? { guestEmail } : {}),
       })
       clearCart()

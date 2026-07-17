@@ -15,6 +15,7 @@ const mockPayload: CreateOrderPayload = {
     postalCode: '12345',
     country: 'US',
   },
+  paymentReference: 'pi_test_123',
 }
 
 const mockSummary: OrderSummary = {

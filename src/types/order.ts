@@ -42,4 +42,7 @@ export interface CreateOrderPayload {
   items: { variantId: string; locationId: string; quantity: number }[]
   shippingAddress: ShippingAddress
   guestEmail?: string
+  // Stripe PaymentIntent id for the payment the shopper just confirmed. The
+  // backend verifies it server-side before confirming the order, so it is required.
+  paymentReference: string
 }
