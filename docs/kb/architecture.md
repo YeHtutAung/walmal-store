@@ -33,6 +33,11 @@
 
 - `auth-store.ts` — `useAuthStore`; state: `{ token, user, status }`; actions: `login`, `register`, `refresh`, `logout`, `setToken`; no persistence (access token in memory only); sets `walmal-auth` presence cookie client-side as fallback.
 - `cart-store.ts` — `useCartStore`; persisted via `zustand/middleware` persist, key **`walmal-cart`** (localStorage); action `mergeGuestCart` called on silent-refresh to merge local guest items with server cart.
+- `wishlist-store.ts` — `useWishlistStore`; **local-only, no backend** — persisted via `zustand/middleware` persist, key **`walmal-wishlist`** (localStorage); state: `{ items: WishlistItem[] }`; actions: `toggle` (add/remove by `productId`), `remove`, `has`. Mirrors `cart-store.ts`'s pattern.
+
+## Toasts
+
+`sonner` provides the app-wide toast system. `<Toaster position="bottom-right" theme="dark" />` is rendered in `Providers` (`src/components/providers.tsx`), a sibling of `{children}` inside `AuthProvider`, so `toast(...)` from `sonner` can be called anywhere in the tree.
 
 ## Middleware (`src/middleware.ts`)
 

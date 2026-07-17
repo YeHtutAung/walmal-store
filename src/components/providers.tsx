@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { Toaster } from 'sonner'
 import { useAuthStore, decodePayload } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
 import { refreshApi } from '@/lib/api/auth'
@@ -64,5 +65,10 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <AuthProvider>{children}</AuthProvider>
+  return (
+    <AuthProvider>
+      {children}
+      <Toaster position="bottom-right" theme="dark" />
+    </AuthProvider>
+  )
 }

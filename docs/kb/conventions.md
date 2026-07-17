@@ -26,7 +26,7 @@ class ApiError extends Error {
 
 ## Store Patterns
 
-- Zustand stores are created once and accessed via named exports (`useAuthStore`, `useCartStore`).
+- Zustand stores are created once and accessed via named exports (`useAuthStore`, `useCartStore`, `useWishlistStore`).
 - `auth-store.ts` uses a `globalThis.__walmal_auth_store` singleton guard to survive Next.js HMR re-evaluation — do not remove it.
 - Avoid direct store imports in Server Components; stores are client-only.
 
