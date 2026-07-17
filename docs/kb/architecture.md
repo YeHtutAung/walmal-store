@@ -8,6 +8,8 @@
 |--------------------|--------|
 | `(shop)/page.tsx` | `/` (home) |
 | `(shop)/products/` | `/products`, `/products/[slug]` |
+
+`/products` accepts either `?q=<term>` (unfiltered full-text search, unchanged — E2E depends on this contract) or `?category=<slug>` (category filter). On `?category`, the page fetches the category tree (`GET /product/categories`) and resolves the slug via `findActiveCategoryBySlug` (`src/lib/api/categories.ts`) — a recursive, active-only match (inactive categories and their descendants never match, even if a descendant is itself active). A resolved match fetches `GET /product/categories/{categoryId}/products` (`fetchProductsByCategory` in `src/lib/api/products.ts`) and renders the category name as the `<h1>`; an unknown or inactive slug silently falls back to the unfiltered `fetchProducts` path with the "Products" heading (no error surfaced). The category tree endpoint returns inactive root categories too (`active:false`, not filtered server-side) — the frontend resolver is what enforces active-only.
 | `(checkout)/cart/` | `/cart` |
 | `(checkout)/checkout/` | `/checkout` |
 | `(account)/account/` | `/account`, `/account/orders/[id]` — middleware-guarded |

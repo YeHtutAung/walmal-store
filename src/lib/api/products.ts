@@ -27,6 +27,15 @@ export async function fetchProducts(query: ProductsQuery = {}): Promise<ProductL
   return { products: page.content, total: page.totalElements, totalPages: page.totalPages }
 }
 
+export async function fetchProductsByCategory(categoryId: string, query: ProductsQuery = {}): Promise<ProductListResponse> {
+  const params = new URLSearchParams()
+  params.set('page', String(query.page ? query.page - 1 : 0))
+  params.set('size', String(query.size ?? 20))
+  const res = await apiClient.get<ApiResponse<ApiPage<Product>>>(`/product/categories/${categoryId}/products?${params}`)
+  const page = res.data.data
+  return { products: page.content, total: page.totalElements, totalPages: page.totalPages }
+}
+
 export async function fetchProduct(productId: string): Promise<Product> {
   const res = await apiClient.get<ApiResponse<Product>>(`/product/${productId}`)
   return res.data.data
