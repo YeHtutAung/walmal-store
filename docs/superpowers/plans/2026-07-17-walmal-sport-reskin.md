@@ -75,11 +75,11 @@ New products `10…-0006` … `10…-0015` (variants `20…-0010`+, prices `30�
 -- =============================================================================
 
 -- ── Categories: flatten to a 4-node sports taxonomy ──────────────────────────
-UPDATE product_categories SET name='Boots',     slug='boots',     parent_id=NULL WHERE id='c0000000-0000-0000-0000-000000000011';
-UPDATE product_categories SET name='Equipment', slug='equipment', parent_id=NULL WHERE id='c0000000-0000-0000-0000-000000000012';
-UPDATE product_categories SET name='Jerseys',   slug='jerseys',   parent_id=NULL WHERE id='c0000000-0000-0000-0000-000000000021';
-UPDATE product_categories SET name='Teamwear',  slug='teamwear',  parent_id=NULL WHERE id='c0000000-0000-0000-0000-000000000022';
-UPDATE product_categories SET is_active=FALSE WHERE id IN
+UPDATE product_categories SET name='Boots',     slug='boots',     parent_id=NULL, updated_at=NOW() WHERE id='c0000000-0000-0000-0000-000000000011';
+UPDATE product_categories SET name='Equipment', slug='equipment', parent_id=NULL, updated_at=NOW() WHERE id='c0000000-0000-0000-0000-000000000012';
+UPDATE product_categories SET name='Jerseys',   slug='jerseys',   parent_id=NULL, updated_at=NOW() WHERE id='c0000000-0000-0000-0000-000000000021';
+UPDATE product_categories SET name='Teamwear',  slug='teamwear',  parent_id=NULL, updated_at=NOW() WHERE id='c0000000-0000-0000-0000-000000000022';
+UPDATE product_categories SET is_active=FALSE, updated_at=NOW() WHERE id IN
     ('c0000000-0000-0000-0000-000000000001','c0000000-0000-0000-0000-000000000002');
 
 -- ── Existing products → sports products (same UUIDs) ─────────────────────────
@@ -87,47 +87,52 @@ UPDATE product_products SET
     category_id='c0000000-0000-0000-0000-000000000011',
     name='Velocity Elite FG Boot', slug='velocity-elite-fg-boot',
     description='Limited-edition featherweight speed boot. Carbon soleplate, hand-finished knit upper.',
-    brand='Walmal Pro'
+    brand='Walmal Pro',
+    updated_at=NOW()
 WHERE id='10000000-0000-0000-0000-000000000001';
 
 UPDATE product_products SET
     category_id='c0000000-0000-0000-0000-000000000011',
     name='Phantom Strike FG Boot', slug='phantom-strike-fg-boot',
     description='Elite firm-ground boot with asymmetric lacing and grippy strike zone.',
-    brand='Walmal Pro'
+    brand='Walmal Pro',
+    updated_at=NOW()
 WHERE id='10000000-0000-0000-0000-000000000002';
 
 UPDATE product_products SET
     category_id='c0000000-0000-0000-0000-000000000012',
     name='Pro Match Goal — Full Size', slug='pro-match-goal',
     description='Full-size aluminium match goal, weatherproof net included. FIFA-spec dimensions.',
-    brand='Walmal Sport'
+    brand='Walmal Sport',
+    updated_at=NOW()
 WHERE id='10000000-0000-0000-0000-000000000003';
 
 UPDATE product_products SET
     category_id='c0000000-0000-0000-0000-000000000021',
     name='Harbour City FC Fan Tee', slug='harbour-city-fan-tee',
     description='100% cotton supporter tee in club colours. Unisex fit.',
-    brand='Harbour City FC'
+    brand='Harbour City FC',
+    updated_at=NOW()
 WHERE id='10000000-0000-0000-0000-000000000004';
 
 UPDATE product_products SET
     category_id='c0000000-0000-0000-0000-000000000022',
     name='DNA Training Pants', slug='dna-training-pants',
     description='Slim training pants with stretch panels and zipped ankles.',
-    brand='Walmal Pro'
+    brand='Walmal Pro',
+    updated_at=NOW()
 WHERE id='10000000-0000-0000-0000-000000000005';
 
 -- ── Existing variants → sports variants (same UUIDs, prices untouched) ───────
-UPDATE product_variants SET sku='WP-VELO-LE-UK9',  name='Velocity Elite LE UK 9 Chaos Red',    attributes='{"size":"UK 9","color":"Chaos Red"}'    WHERE id='20000000-0000-0000-0000-000000000001';
-UPDATE product_variants SET sku='WP-VELO-LE-UK9G', name='Velocity Elite LE UK 9 Gold Limited', attributes='{"size":"UK 9","color":"Gold Limited"}' WHERE id='20000000-0000-0000-0000-000000000002';
-UPDATE product_variants SET sku='WP-PHTM-UK8-BLK', name='Phantom Strike UK 8 Black',           attributes='{"size":"UK 8","color":"Black"}'        WHERE id='20000000-0000-0000-0000-000000000003';
-UPDATE product_variants SET sku='WP-PHTM-UK9-BLK', name='Phantom Strike UK 9 Black',           attributes='{"size":"UK 9","color":"Black"}'        WHERE id='20000000-0000-0000-0000-000000000004';
-UPDATE product_variants SET sku='WS-GOAL-FS-ALU',  name='Pro Match Goal Full Size Aluminium',  attributes='{"size":"Full Size","color":"Aluminium"}' WHERE id='20000000-0000-0000-0000-000000000005';
-UPDATE product_variants SET sku='HC-FTEE-M-WHT',   name='Fan Tee M White',                     attributes='{"size":"M","color":"White"}'           WHERE id='20000000-0000-0000-0000-000000000006';
-UPDATE product_variants SET sku='HC-FTEE-L-BLK',   name='Fan Tee L Black',                     attributes='{"size":"L","color":"Black"}'           WHERE id='20000000-0000-0000-0000-000000000007';
-UPDATE product_variants SET sku='WP-DNAP-32-NVY',  name='DNA Training Pants 32 Navy',          attributes='{"size":"32","color":"Navy"}'           WHERE id='20000000-0000-0000-0000-000000000008';
-UPDATE product_variants SET sku='WP-DNAP-34-BLK',  name='DNA Training Pants 34 Black',         attributes='{"size":"34","color":"Black"}'          WHERE id='20000000-0000-0000-0000-000000000009';
+UPDATE product_variants SET sku='WP-VELO-LE-UK9',  name='Velocity Elite LE UK 9 Chaos Red',    attributes='{"size":"UK 9","color":"Chaos Red"}'   , updated_at=NOW() WHERE id='20000000-0000-0000-0000-000000000001';
+UPDATE product_variants SET sku='WP-VELO-LE-UK9G', name='Velocity Elite LE UK 9 Gold Limited', attributes='{"size":"UK 9","color":"Gold Limited"}', updated_at=NOW() WHERE id='20000000-0000-0000-0000-000000000002';
+UPDATE product_variants SET sku='WP-PHTM-UK8-BLK', name='Phantom Strike UK 8 Black',           attributes='{"size":"UK 8","color":"Black"}'       , updated_at=NOW() WHERE id='20000000-0000-0000-0000-000000000003';
+UPDATE product_variants SET sku='WP-PHTM-UK9-BLK', name='Phantom Strike UK 9 Black',           attributes='{"size":"UK 9","color":"Black"}'       , updated_at=NOW() WHERE id='20000000-0000-0000-0000-000000000004';
+UPDATE product_variants SET sku='WS-GOAL-FS-ALU',  name='Pro Match Goal Full Size Aluminium',  attributes='{"size":"Full Size","color":"Aluminium"}', updated_at=NOW() WHERE id='20000000-0000-0000-0000-000000000005';
+UPDATE product_variants SET sku='HC-FTEE-M-WHT',   name='Fan Tee M White',                     attributes='{"size":"M","color":"White"}'          , updated_at=NOW() WHERE id='20000000-0000-0000-0000-000000000006';
+UPDATE product_variants SET sku='HC-FTEE-L-BLK',   name='Fan Tee L Black',                     attributes='{"size":"L","color":"Black"}'          , updated_at=NOW() WHERE id='20000000-0000-0000-0000-000000000007';
+UPDATE product_variants SET sku='WP-DNAP-32-NVY',  name='DNA Training Pants 32 Navy',          attributes='{"size":"32","color":"Navy"}'          , updated_at=NOW() WHERE id='20000000-0000-0000-0000-000000000008';
+UPDATE product_variants SET sku='WP-DNAP-34-BLK',  name='DNA Training Pants 34 Black',         attributes='{"size":"34","color":"Black"}'         , updated_at=NOW() WHERE id='20000000-0000-0000-0000-000000000009';
 
 -- ── Drop seed-era product images (script re-seeds sports art afterwards) ─────
 -- MinIO objects become orphans; acceptable for dev data.
@@ -462,7 +467,7 @@ describe('wishlist store', () => {
 })
 ```
 
-- [ ] **Step B2.2:** Run `npm run test:unit -- tests/store/wishlist-store.test.ts` → FAIL (module not found).
+- [ ] **Step B2.2:** Run `npm test -- tests/store/wishlist-store.test.ts` → FAIL (module not found).
 - [ ] **Step B2.3: Implement** `src/store/wishlist-store.ts` (persist key `walmal-wishlist`, same zustand/persist pattern as `cart-store.ts`):
 
 ```ts
@@ -504,7 +509,7 @@ export const useWishlistStore = create<WishlistState>()(
 )
 ```
 
-- [ ] **Step B2.4:** Run the tests → PASS. Run the full unit suite `npm run test:unit` → all pass.
+- [ ] **Step B2.4:** Run the tests → PASS. Run the full unit suite `npm test` → all pass.
 - [ ] **Step B2.5:** `npm install sonner`, add to `providers.tsx`: `import { Toaster } from 'sonner'` and render `<Toaster position="bottom-right" theme="dark" />` alongside existing children.
 - [ ] **Step B2.6: Commit** `feat(wishlist): local-only wishlist store + sonner toaster`
 
@@ -617,7 +622,7 @@ Follow the wireframe files for every pixel value (colors/sizes/spacing are all a
   - Auth area: EXACT same texts/links as the current file ("Hi, {username}" → `/account`, "Sign out" button, "Sign in" → `/login`, "Register" → `/register`); restyle only.
   - Bag button (in `cart-icon-button.tsx`): red `label-caps` button, text "Bag", white count pill; keep the existing `onClick` prop contract and any existing aria/testid. It must still open `CartDrawer`.
   - Mobile (`lg:hidden`): hamburger button (aria-label "Menu") → `mobile-menu.tsx` using the existing shadcn `Sheet` (`side="left"`, dark panel): nav items Anton 26px (Shop All, Jerseys, Boots, Teamwear, Equipment, Saved), bottom links Account (auth-aware) and Help; centered logo; heart with badge. Search row below the bar on `/` and `/products` only (check `usePathname()`).
-  - Hydration guard: wishlist/cart counts come from persisted stores — render count badges only after mount (`useEffect` mounted flag, same pattern as any existing persisted-count usage in `cart-icon-button.tsx` — inspect it first and reuse its approach).
+  - Hydration guard: wishlist/cart counts come from persisted stores and there is NO existing guard pattern to copy (`cart-icon-button.tsx` renders the count directly today). Implement a mounted flag (`const [mounted, setMounted] = useState(false); useEffect(() => setMounted(true), [])`) and render count badges only when `mounted`, in both the header and the bottom tab bar.
 - [ ] **Step B4.3: Verify** in dev: desktop ≥1024px shows full bar; mobile 390px shows hamburger/logo/heart; drawer opens; search submits to `/products?q=…`; auth flows still show the same texts. `npm run build` passes.
 - [ ] **Step B4.4: Commit** `feat(chrome): Walmal Sport header — announcement bar, sport nav, search, bag, mobile drawer`
 
@@ -727,10 +732,10 @@ Implementation: FNV-1a hash of the id → `{ stars: 4 | 4.5 | 5, reviews }`; ren
 ### Task B9: Dark-theme sweep of existing pages
 
 **Files:**
-- Modify: `src/components/checkout/checkout-form.tsx` (Stripe CardElement colors)
+- Modify: `src/components/checkout/stripe-payment.tsx` (Stripe CardElement colors, inline `options` at lines ~50–58)
 - Modify: only what the sweep finds (hardcoded light colors)
 
-- [ ] **Step B9.1: Stripe CardElement** renders its own iframe — token CSS can't reach it. In `checkout-form.tsx`, set/merge `CARD_ELEMENT_OPTIONS.style.base = { color: '#f4f4f2', '::placeholder': { color: '#9a9a9f' }, iconColor: '#9a9a9f' }` (and `invalid.color: '#e0281b'`). Keep everything else.
+- [ ] **Step B9.1: Stripe CardElement** renders its own iframe — token CSS can't reach it. In `stripe-payment.tsx` the `<CardElement options={{ style: … }}>` is inline: replace `#424770` → `#f4f4f2`, the `::placeholder` `#aab7c4` → `#9a9a9f`, and the invalid color `#9e2146` → `#e0281b`; add `iconColor: '#9a9a9f'`. Keep everything else.
 - [ ] **Step B9.2: Sweep:** `grep -rn "bg-white\|text-black\|bg-gray-\|bg-neutral-50\|text-gray-9" src/ --include="*.tsx"` — for each hit outside the deliberate white product tile, replace with token classes. Manually click through: `/login`, `/register`, `/account` (+orders), `/cart` page if present, checkout with test card `4242…`, order-confirmation. Everything must be legible dark-theme.
 - [ ] **Step B9.3: Commit** `fix(theme): dark-theme sweep — Stripe element colors + stragglers`
 
@@ -747,7 +752,7 @@ Implementation: FNV-1a hash of the id → `{ stars: 4 | 4.5 | 5, reviews }`; ren
 Run: `cd C:/YHA/006_Claude_Workspace/walmal-store && npx playwright test`
 Expected: 96/96 pass across chromium, firefox, webkit. Debug failures with `npx playwright test --project=chromium <file>` before rerunning the matrix. Use @superpowers:systematic-debugging for any non-obvious failure.
 
-- [ ] **Step B10.4: Unit suite:** `npm run test:unit` → all pass.
+- [ ] **Step B10.4: Unit suite:** `npm test` → all pass.
 - [ ] **Step B10.5: Commit** `test(e2e): sports catalog fixtures + reskin selector updates`
 
 ### Task B11: Store KB + README + screenshots
