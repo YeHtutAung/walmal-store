@@ -4,20 +4,15 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Heart, Search } from 'lucide-react'
-import { useAuth } from '@/hooks/use-auth'
 import { useWishlistStore } from '@/store/wishlist-store'
 import { CartIconButton } from './cart-icon-button'
 import { CartDrawer } from '@/components/cart/cart-drawer'
 import { AnnouncementBar } from './announcement-bar'
 import { MobileMenu } from './mobile-menu'
+import { NAV_LINKS } from './nav-links'
+import { AuthLinks } from './auth-links'
 
-const NAV_LINKS = [
-  { label: 'Shop All', href: '/products' },
-  { label: 'Jerseys', href: '/products?category=jerseys' },
-  { label: 'Boots', href: '/products?category=boots' },
-  { label: 'Teamwear', href: '/products?category=teamwear' },
-  { label: 'Equipment', href: '/products?category=equipment' },
-]
+const DESKTOP_NAV_LINKS = NAV_LINKS.filter((link) => !link.mobileOnly)
 
 function SearchForm({ className = '' }: { className?: string }) {
   return (
@@ -32,13 +27,14 @@ function SearchForm({ className = '' }: { className?: string }) {
         placeholder="Search jerseys, boots, teams"
         className="w-full bg-transparent text-[13.5px] text-foreground placeholder:text-muted-foreground focus:outline-none"
       />
+      <button type="submit" className="sr-only">
+        Search
+      </button>
     </form>
   )
 }
 
 export function SiteHeader() {
-  const { status, user, logout } = useAuth()
-  const isAuthenticated = status === 'authenticated'
   const [cartOpen, setCartOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
@@ -48,8 +44,8 @@ export function SiteHeader() {
   // only after mount so server HTML and first client render match.
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  const items = useWishlistStore((s) => s.items)
-  const wishlistCount = mounted ? items.length : 0
+  const itemCount = useWishlistStore((s) => s.items.length)
+  const wishlistCount = mounted ? itemCount : 0
 
   const heart = (
     <Heart
@@ -72,7 +68,7 @@ export function SiteHeader() {
             </Link>
 
             <nav className="flex items-center gap-6">
-              {NAV_LINKS.map((link) => (
+              {DESKTOP_NAV_LINKS.map((link) => (
                 <Link
                   key={link.label}
                   href={link.href}
@@ -99,38 +95,7 @@ export function SiteHeader() {
                 )}
               </Link>
 
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    href="/account"
-                    className="font-label text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Hi, {user?.username}
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={logout}
-                    className="font-label text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Sign out
-                  </button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="font-label text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Sign in
-                  </Link>
-                  <Link
-                    href="/register"
-                    className="font-label rounded-[10px] border border-border px-3.5 py-2 text-[13px] font-semibold text-foreground transition-colors hover:border-primary"
-                  >
-                    Register
-                  </Link>
-                </>
-              )}
+              <AuthLinks variant="header" />
 
               <CartIconButton onClick={() => setCartOpen(true)} />
             </div>
@@ -141,6 +106,8 @@ export function SiteHeader() {
             <button
               type="button"
               aria-label="Menu"
+              aria-haspopup="dialog"
+              aria-expanded={menuOpen}
               onClick={() => setMenuOpen(true)}
               className="flex flex-col items-start gap-1 py-1.5"
             >

@@ -7,6 +7,18 @@ import { fetchProducts, fetchProductsByCategory } from '@/lib/api/products'
 import { fetchCategoryTree, findActiveCategoryBySlug } from '@/lib/api/categories'
 import { useAuth } from '@/hooks/use-auth'
 import type { ProductListResponse } from '@/types/product'
+import type { Category } from '@/lib/api/categories'
+
+// Cached across renders/navigations so the category tree (rarely changing) is
+// fetched once per page load rather than on every effect run. A failed fetch
+// clears the cache so a subsequent retry re-fetches instead of re-throwing.
+let treePromise: Promise<Category[]> | null = null
+function getTree(): Promise<Category[]> {
+  return (treePromise ??= fetchCategoryTree().catch((err) => {
+    treePromise = null
+    throw err
+  }))
+}
 
 export default function ProductsPage() {
   return (
@@ -37,22 +49,25 @@ function ProductsContent() {
     setLoading(true)
     setError(null)
 
-    async function load() {
+    async function load(): Promise<{ heading: string; data: ProductListResponse }> {
       if (categorySlug) {
-        const tree = await fetchCategoryTree()
+        const tree = await getTree()
         const category = findActiveCategoryBySlug(tree, categorySlug)
         if (category) {
-          setHeading(category.name)
-          return fetchProductsByCategory(category.categoryId, { page })
+          const data = await fetchProductsByCategory(category.categoryId, { page })
+          return { heading: category.name, data }
         }
       }
-      setHeading('Products')
-      return fetchProducts({ search, page })
+      const data = await fetchProducts({ search, page })
+      return { heading: 'Products', data }
     }
 
     load()
-      .then((res) => {
-        if (!cancelled) setData(res)
+      .then(({ heading, data }) => {
+        if (!cancelled) {
+          setHeading(heading)
+          setData(data)
+        }
       })
       .catch((err) => {
         if (!cancelled) setError(err?.message ?? 'Failed to load products')
