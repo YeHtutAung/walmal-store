@@ -65,8 +65,9 @@ checkout panels, and summaries stay dark through the token.
   Worldwide shipping available".
 - **Desktop header** (rebuild `site-header.tsx`) — sticky, blur backdrop,
   WALMAL**SPORT** logo (SPORT in red, Anton), category nav links →
-  `/products?category=<slug>`, search input submitting to
-  `/products?search=<q>`, wishlist heart (count from wishlist store),
+  `/products?category=<slug>`, search input submitting to `/products?q=<q>`
+  (the existing query-param contract, exercised by E2E — do NOT rename it),
+  wishlist heart (count from wishlist store),
   auth area preserving current behavior exactly (Sign in / Register vs
   "Hi, username" / Sign out — E2E depends on it), red **Bag** button with
   item count opening the existing `CartDrawer`.
@@ -97,6 +98,19 @@ Sections top-to-bottom:
    "Shop new arrivals" → `/products`, "Shop boots" → `/products?category=boots`.
 2. **Category tiles** — 4-up grid desktop (tile illustration + name +
    "Shop now →"); horizontal chip rail on mobile. Links to filtered listing.
+
+### Listing-page query-param support (in scope — functional, not visual)
+
+The listing *wireframe* stays out of scope, but the header/tile links above
+require minimal functional support on `/products` that does not exist today:
+
+- `?q=<q>` — already supported; unchanged.
+- `?category=<slug>` — NEW. The listing page resolves slug → categoryId by
+  fetching the category tree (`GET /product/categories`) and matching on
+  slug, then loads products via
+  `GET /product/categories/{categoryId}/products`. No hardcoded category
+  UUIDs in the frontend. Unknown slug → fall back to the unfiltered listing.
+  No other listing-page changes (layout/UI untouched beyond inherited theme).
 3. **New Arrivals rail** — horizontal scroll, 6 newest real products,
    white tiles, red "New" badge, brand/name/price, Add button.
 4. **Promo banner** — static "The Velocity Elite Pack" limited-release
@@ -118,14 +132,23 @@ wireframe honestly to sized products.
 ### Migration `V17__reseed_sports_catalog.sql`
 
 - **UPDATE in place** (same UUIDs, same prices):
-  - Categories become the sports taxonomy: Jerseys, Boots, Teamwear,
-    Equipment (slugs updated to match).
-  - Existing seeded products/variants become sports products. Test-critical
-    variants keep UUID + price:
+  - Categories: V9 seeds a two-level tree — 2 parents (Electronics
+    `c0..-01`, Clothing `c0..-02`) and 4 children (Smartphones, Laptops,
+    T-Shirts, Jeans). V17 renames the 4 child rows to the sports taxonomy
+    (Jerseys, Boots, Teamwear, Equipment — slugs `jerseys`, `boots`,
+    `teamwear`, `equipment`), re-parents them to root
+    (`parent_id = NULL`), and deactivates the 2 parent rows
+    (`is_active = FALSE`). Result: a flat 4-category sports taxonomy on
+    the existing child UUIDs.
+  - Existing seeded products/variants become sports products: names, slugs,
+    descriptions, brands, and SKUs are all renamed (sports-plausible SKU
+    scheme); UUIDs and prices never change. Test-critical variants:
     - `20000000-0000-0000-0000-000000000001` → premium limited-edition boot
       (e.g. "Velocity Elite FG Boot — UK 9") at $1,199.99
     - `20000000-0000-0000-0000-000000000002` → its sibling variant at
       $1,419.99
+    k6 scripts reference variants only by UUID, which is why they need no
+    changes.
 - **INSERT ~10 new products** across the 4 categories at design prices
   (jerseys $115–189, boots $319–449, match ball $79, shinguards $45 …),
   with size variants, stock rows at the default location, idempotent
@@ -141,14 +164,24 @@ category-tile art are frontend static assets in `/public` (not MinIO).
 ## Testing
 
 - **Store E2E (96 Playwright tests):** update assertions referencing old
-  product names/SKUs; keep existing `data-testid` conventions on rebuilt
-  components so selectors still bind. Full chromium+firefox+webkit run must
-  pass before completion.
+  product names/SKUs. Rebuilt chrome/homepage must preserve the accessible
+  names, roles, and existing `data-testid`s that current selectors bind to
+  (e.g. "Sign in", "Hi, username", `product-card`); the `?q=` search param
+  contract is unchanged. Full chromium+firefox+webkit run must pass before
+  completion.
 - **k6:** variant UUIDs and prices unchanged → no changes expected;
   smoke-check one scenario.
 - **Admin E2E:** creates its own products; unaffected.
 - **Unit (vitest):** new wishlist store gets unit tests; rate-limit tests
   unaffected.
+
+## Sequencing note for the plan
+
+The work spans two repos with a real ordering constraint: the backend reseed
+(V17 + MinIO images + backend restart) must land before homepage sections
+can show real sports data. The implementation plan should split into
+separately executable phases — backend reseed first, then store frontend —
+each independently verifiable.
 
 ## Docs / KB (maintenance rule)
 
