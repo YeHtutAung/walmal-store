@@ -1,56 +1,184 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Heart, Search } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
+import { useWishlistStore } from '@/store/wishlist-store'
 import { CartIconButton } from './cart-icon-button'
 import { CartDrawer } from '@/components/cart/cart-drawer'
-import { Button } from '@/components/ui/button'
+import { AnnouncementBar } from './announcement-bar'
+import { MobileMenu } from './mobile-menu'
+
+const NAV_LINKS = [
+  { label: 'Shop All', href: '/products' },
+  { label: 'Jerseys', href: '/products?category=jerseys' },
+  { label: 'Boots', href: '/products?category=boots' },
+  { label: 'Teamwear', href: '/products?category=teamwear' },
+  { label: 'Equipment', href: '/products?category=equipment' },
+]
+
+function SearchForm({ className = '' }: { className?: string }) {
+  return (
+    <form
+      action="/products"
+      className={`items-center gap-2.5 rounded-[10px] border border-input bg-secondary px-3.5 py-2.5 transition-colors focus-within:border-[#3a3a42] ${className}`}
+    >
+      <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+      <input
+        name="q"
+        type="search"
+        placeholder="Search jerseys, boots, teams"
+        className="w-full bg-transparent text-[13.5px] text-foreground placeholder:text-muted-foreground focus:outline-none"
+      />
+    </form>
+  )
+}
 
 export function SiteHeader() {
   const { status, user, logout } = useAuth()
   const isAuthenticated = status === 'authenticated'
   const [cartOpen, setCartOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const pathname = usePathname()
+  const showMobileSearch = pathname === '/' || pathname === '/products'
+
+  // Wishlist count comes from a persisted (localStorage) store — render it
+  // only after mount so server HTML and first client render match.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const items = useWishlistStore((s) => s.items)
+  const wishlistCount = mounted ? items.length : 0
+
+  const heart = (
+    <Heart
+      className={`h-[18px] w-[18px] ${
+        wishlistCount > 0 ? 'fill-primary text-primary' : 'text-muted-foreground'
+      }`}
+      aria-hidden="true"
+    />
+  )
 
   return (
     <>
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          Walmal
-        </Link>
+      <AnnouncementBar />
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur">
+        <div className="mx-auto max-w-[1360px] px-4 lg:px-8">
+          {/* Desktop row */}
+          <div className="hidden h-[68px] items-center gap-[30px] lg:flex">
+            <Link href="/" className="display-heading text-[26px] text-foreground">
+              WALMAL<span className="text-primary">SPORT</span>
+            </Link>
 
-        <nav className="flex items-center gap-6 text-sm font-medium">
-          <Link href="/products" className="text-muted-foreground transition-colors hover:text-foreground">
-            Products
-          </Link>
-        </nav>
+            <nav className="flex items-center gap-6">
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="label-caps border-b-2 border-transparent pb-0.5 text-[13.5px] text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
 
-        <div className="flex items-center gap-2">
-          <CartIconButton onClick={() => setCartOpen(true)} />
-          {isAuthenticated ? (
-            <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/account">Hi, {user?.username}</Link>
-              </Button>
-              <Button variant="outline" size="sm" onClick={logout}>
-                Sign out
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/login">Sign in</Link>
-              </Button>
-              <Button size="sm" asChild>
-                <Link href="/register">Register</Link>
-              </Button>
-            </>
+            <SearchForm className="ml-auto hidden w-full max-w-[320px] md:flex" />
+
+            <div className="flex items-center gap-4">
+              <Link
+                href="/saved"
+                aria-label={`Saved items (${wishlistCount})`}
+                className="relative flex h-9 w-9 items-center justify-center"
+              >
+                {heart}
+                {wishlistCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-[15px] min-w-[15px] items-center justify-center rounded-full bg-primary px-0.5 text-[8.5px] font-extrabold leading-none text-white">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
+
+              {isAuthenticated ? (
+                <>
+                  <Link
+                    href="/account"
+                    className="font-label text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    Hi, {user?.username}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={logout}
+                    className="font-label text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    Sign out
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="font-label text-[13px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="font-label rounded-[10px] border border-border px-3.5 py-2 text-[13px] font-semibold text-foreground transition-colors hover:border-primary"
+                  >
+                    Register
+                  </Link>
+                </>
+              )}
+
+              <CartIconButton onClick={() => setCartOpen(true)} />
+            </div>
+          </div>
+
+          {/* Mobile row */}
+          <div className="flex items-center gap-3.5 py-[13px] lg:hidden">
+            <button
+              type="button"
+              aria-label="Menu"
+              onClick={() => setMenuOpen(true)}
+              className="flex flex-col items-start gap-1 py-1.5"
+            >
+              <span className="block h-0.5 w-6 rounded bg-foreground" />
+              <span className="block h-0.5 w-6 rounded bg-foreground" />
+              <span className="block h-0.5 w-[17px] rounded bg-foreground" />
+            </button>
+
+            <Link
+              href="/"
+              className="display-heading flex-1 text-center text-[21px] text-foreground"
+            >
+              WALMAL<span className="text-primary">SPORT</span>
+            </Link>
+
+            <Link
+              href="/saved"
+              aria-label={`Saved items (${wishlistCount})`}
+              className="relative flex h-9 w-9 items-center justify-center"
+            >
+              {heart}
+              {wishlistCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-[15px] min-w-[15px] items-center justify-center rounded-full bg-primary px-0.5 text-[8.5px] font-extrabold leading-none text-white">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+          </div>
+
+          {showMobileSearch && (
+            <div className="pb-3 lg:hidden">
+              <SearchForm className="flex" />
+            </div>
           )}
         </div>
-      </div>
-    </header>
-    <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+      </header>
+      <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
+      <MobileMenu open={menuOpen} onOpenChange={setMenuOpen} />
     </>
   )
 }

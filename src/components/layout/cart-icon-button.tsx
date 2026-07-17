@@ -1,45 +1,48 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ShoppingCart } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { useCart } from '@/hooks/use-cart'
 
 interface CartIconButtonProps {
   onClick?: () => void
 }
 
+const buttonClasses =
+  'label-caps inline-flex items-center gap-2 rounded-[10px] bg-primary px-4 py-2.5 text-[12.5px] text-primary-foreground transition-colors hover:bg-primary/85'
+
 export function CartIconButton({ onClick }: CartIconButtonProps) {
   const { itemCount } = useCart()
+  // Cart count comes from a persisted (localStorage) store — render 0 until
+  // mounted so server HTML and first client render match (hydration guard).
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const count = mounted ? itemCount : 0
 
-  const badge = itemCount > 0 && (
-    <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center">
-      {itemCount > 99 ? '99+' : itemCount}
-    </Badge>
+  const pill = count > 0 && (
+    <span className="flex h-[19px] min-w-[19px] items-center justify-center rounded-full bg-white px-1 text-[11px] font-extrabold leading-none text-background">
+      {count > 99 ? '99+' : count}
+    </span>
   )
 
   if (onClick) {
     return (
-      <Button
-        variant="ghost"
-        size="icon"
-        className="relative"
-        aria-label={`Cart (${itemCount} items)`}
+      <button
+        type="button"
+        className={buttonClasses}
+        aria-label={`Cart (${count} items)`}
         onClick={onClick}
       >
-        <ShoppingCart className="h-5 w-5" />
-        {badge}
-      </Button>
+        Bag
+        {pill}
+      </button>
     )
   }
 
   return (
-    <Button variant="ghost" size="icon" asChild className="relative">
-      <Link href="/cart" aria-label={`Cart (${itemCount} items)`}>
-        <ShoppingCart className="h-5 w-5" />
-        {badge}
-      </Link>
-    </Button>
+    <Link href="/cart" className={buttonClasses} aria-label={`Cart (${count} items)`}>
+      Bag
+      {pill}
+    </Link>
   )
 }

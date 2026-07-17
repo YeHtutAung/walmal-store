@@ -37,6 +37,19 @@
 - `cart-store.ts` — `useCartStore`; persisted via `zustand/middleware` persist, key **`walmal-cart`** (localStorage); action `mergeGuestCart` called on silent-refresh to merge local guest items with server cart.
 - `wishlist-store.ts` — `useWishlistStore`; **local-only, no backend** — persisted via `zustand/middleware` persist, key **`walmal-wishlist`** (localStorage); state: `{ items: WishlistItem[] }`; actions: `toggle` (add/remove by `productId`), `remove`, `has`. Mirrors `cart-store.ts`'s pattern.
 
+## Global Chrome (`src/components/layout/`)
+
+`SiteHeader` (client) renders, in order: `AnnouncementBar` (server component; red `bg-primary` strip, `label-caps`, "Free local delivery over $80 · Worldwide shipping available") as a non-sticky sibling above the sticky `<header>` (`bg-background/90 backdrop-blur border-b border-border`, inner `max-w-[1360px]`), then `CartDrawer` and `MobileMenu` as siblings below.
+
+- **Logo**: `WALMAL<span class=text-primary>SPORT</span>` in `display-heading` (Anton), links to `/`.
+- **Desktop nav** (`hidden lg:flex`): Shop All → `/products`, then Jerseys/Boots/Teamwear/Equipment → `/products?category=<slug>` — `label-caps` links, red bottom border on hover.
+- **Search**: plain GET form — `<form action="/products">` with `<input name="q">` (contract: submits to `/products?q=<query>`; E2E depends on the `q` param name). Desktop form in the lg row; a mobile search row renders below the bar **only** on `/` and `/products` (via `usePathname()`).
+- **Wishlist heart**: links to `/saved`; count from `useWishlistStore`; red/filled when count > 0, muted otherwise.
+- **Auth area** (E2E contract — texts/hrefs must not change): guest → "Sign in" (`/login`) + "Register" (`/register`); authenticated → "Hi, {username}" (`/account`) + "Sign out" button calling `logout`. Restyle freely; never rename.
+- **Bag button** (`cart-icon-button.tsx`): red `bg-primary` button labeled "Bag" with white count pill; keeps `aria-label="Cart (N items)"`; with `onClick` prop it opens `CartDrawer` (local `cartOpen` state in `SiteHeader`), without it it links to `/cart`.
+- **Mobile row** (`lg:hidden`): hamburger (`aria-label="Menu"`) opens `MobileMenu` — a shadcn `Sheet side="left"` dark panel with Anton nav links (Shop All, category links, Saved → `/saved`), auth-aware account links reusing the exact header auth texts, and "Help & returns" (`href="#"`). Every item closes the sheet on click.
+- **Hydration guard**: cart/wishlist counts come from persisted (localStorage) Zustand stores — components render count 0 until a `mounted` flag flips in `useEffect`, so server HTML matches the first client render. Apply this pattern to any UI derived from a persisted store.
+
 ## Toasts
 
 `sonner` provides the app-wide toast system. `<Toaster position="bottom-right" theme="dark" />` is rendered in `Providers` (`src/components/providers.tsx`), a sibling of `{children}` inside `AuthProvider`, so `toast(...)` from `sonner` can be called anywhere in the tree.
