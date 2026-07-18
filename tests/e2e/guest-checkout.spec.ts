@@ -25,8 +25,8 @@ import type { CartItem } from '../../src/types/cart'
 // ---------------------------------------------------------------------------
 const SEEDED_ITEM: CartItem = {
   variantId:   '20000000-0000-0000-0000-000000000001',
-  productName: 'Galaxy S24 Ultra',
-  variantName: 'SAM-S24U-256-BLK',
+  productName: 'Velocity Elite FG Boot',
+  variantName: 'WP-VELO-LE-UK9',
   price:       1199.99,
   quantity:    1,
   imageUrl:    '',

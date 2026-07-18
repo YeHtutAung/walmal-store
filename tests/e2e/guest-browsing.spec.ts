@@ -36,11 +36,11 @@ test.beforeEach(async ({ page }) => {
 // ---------------------------------------------------------------------------
 // TC-E2E-001
 // ---------------------------------------------------------------------------
-test('TC-E2E-001 home page loads with featured products section', async ({ page }) => {
+test('TC-E2E-001 home page loads with hero and product sections', async ({ page }) => {
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: 'Welcome to Walmal' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Featured products' })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Shop now' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /own\s*the pitch\./i })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'New Arrivals' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Shop new arrivals' })).toBeVisible()
 })
 
 // ---------------------------------------------------------------------------
@@ -58,8 +58,8 @@ test('TC-E2E-002 /products renders product grid for unauthenticated guest', asyn
 // TC-E2E-003 — adapted: search filter (category filter UI not yet implemented)
 // ---------------------------------------------------------------------------
 test('TC-E2E-003 search filter — ?q= updates URL and grid refreshes', async ({ page }) => {
-  await page.goto('/products?q=shirt')
-  await expect(page).toHaveURL(/q=shirt/)
+  await page.goto('/products?q=jersey')
+  await expect(page).toHaveURL(/q=jersey/)
   await expect(page.getByText('Loading…')).not.toBeVisible({ timeout: 10_000 })
   await expect(page.locator('text=/\\d+ products/')).toBeVisible()
 })
@@ -117,6 +117,9 @@ test('TC-E2E-007 cart drawer opens and shows the added item', async ({ page }) =
   await page.goto('/products')
   await expect(page.getByText('Loading…')).not.toBeVisible({ timeout: 10_000 })
   await page.locator('[data-testid="product-card-link"]').first().click()
+  // Wait for the detail page before reading its h1 — reading immediately after
+  // click() races the navigation and can capture the listing page's "Products".
+  await expect(page).toHaveURL(/\/products\/.+/)
   const productName = await page.getByRole('heading', { level: 1 }).innerText()
 
   await page.locator('text=Select variant').locator('..').getByRole('button').first().click()
@@ -125,9 +128,10 @@ test('TC-E2E-007 cart drawer opens and shows the added item', async ({ page }) =
   // Click cart icon to open drawer
   await page.getByRole('button', { name: /Cart \(\d+ items?\)/i }).click()
 
-  // Drawer heading and item should be visible
+  // Drawer heading and item should be visible (scope to the dialog — the
+  // detail page h1 behind the overlay carries the same text)
   await expect(page.getByRole('heading', { name: /Your cart/i })).toBeVisible()
-  await expect(page.getByText(productName)).toBeVisible()
+  await expect(page.getByRole('dialog').getByText(productName)).toBeVisible()
 })
 
 // ---------------------------------------------------------------------------
