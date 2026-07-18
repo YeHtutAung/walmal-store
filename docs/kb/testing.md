@@ -12,7 +12,7 @@
 
 - Config: `playwright.config.ts`; test dir: `tests/e2e/`; global setup: `tests/e2e/global-setup.ts`.
 - Browsers: chromium, firefox, webkit (sequential, 1 worker, no retries).
-- Expected: **96 tests pass**.
+- Expected: **105 tests pass** (35 unique × 3 browsers).
 - Run command: `npx playwright test`
 
 ### Two-WebServer Setup
