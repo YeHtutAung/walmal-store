@@ -36,8 +36,8 @@ export function WishlistHeart({ product, size = 'card' }: WishlistHeartProps) {
 
   const shell =
     size === 'card'
-      ? 'h-8 w-8 bg-white/[.92]'
-      : 'h-11 w-11 border border-border bg-secondary'
+      ? 'h-8 w-8 bg-white/[.92] hover:bg-white'
+      : 'h-11 w-11 border border-border bg-secondary hover:border-primary'
   const icon = size === 'card' ? 'h-4 w-4' : 'h-5 w-5'
 
   return (
@@ -46,10 +46,10 @@ export function WishlistHeart({ product, size = 'card' }: WishlistHeartProps) {
       onClick={handleClick}
       aria-pressed={saved}
       aria-label={saved ? `Remove ${product.name} from saved` : `Save ${product.name}`}
-      className={`flex items-center justify-center rounded-full transition-colors ${shell}`}
+      className={`flex items-center justify-center rounded-full ${shell}`}
     >
       <Heart
-        className={`${icon} ${saved ? 'fill-primary text-primary' : 'text-[#c8c8c4]'}`}
+        className={`transition-colors ${icon} ${saved ? 'fill-primary text-primary' : 'text-[#c8c8c4]'}`}
         aria-hidden="true"
       />
     </button>

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { VariantSelector } from './variant-selector'
+import { WishlistHeart } from '@/components/product/wishlist-heart'
 import { useCart } from '@/hooks/use-cart'
 import { formatPrice } from '@/lib/utils'
 import { resolveMinioUrl } from '@/lib/minio-url'
@@ -72,14 +73,17 @@ export function ProductDetail({ product, variants }: ProductDetailProps) {
           onSelect={setSelectedVariant}
         />
 
-        <Button
-          size="lg"
-          className="w-full"
-          disabled={!selectedVariant}
-          onClick={handleAddToCart}
-        >
-          {added ? 'Added to cart!' : 'Add to cart'}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            size="lg"
+            className="flex-1"
+            disabled={!selectedVariant}
+            onClick={handleAddToCart}
+          >
+            {added ? 'Added to cart!' : 'Add to cart'}
+          </Button>
+          <WishlistHeart product={product} size="detail" />
+        </div>
       </div>
     </div>
   )

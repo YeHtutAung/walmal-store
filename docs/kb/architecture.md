@@ -72,7 +72,7 @@ Server page, `fetchProductsSSG` + ISR `revalidate = 3600`, try/catch so a down b
 
 **Smart add-to-bag rule** (`src/lib/add-to-bag.ts`, `addProductToBag(product)`): fetches the product's variants; exactly one ACTIVE variant **and** a non-null `lowestPrice` → adds it to the cart store directly + `toast.success`, returns `'added'`; otherwise returns `'navigate'` and the caller routes to the product detail page (variant selector lives there). CartItem fields mirror `product-detail.tsx` exactly — **raw `primaryImageUrl`** (the cart drawer resolves MinIO URLs at render), `variantName` = `[name, color, size].join(' · ') || sku`. Used by `ProductCard`'s Add button and the Saved page's "Add to bag".
 
-**No heart toggle exists on product cards yet** — the wishlist gains items only via `useWishlistStore.getState().toggle(...)`; listing/product-page hearts are follow-up work (the reskin spec scopes those pages to inherited theme only).
+**Heart toggle** (`src/components/product/wishlist-heart.tsx`): shared client component on every `ProductCard` (top-right of the image, 32px white circle) and on the product detail page (44px, beside Add to cart). Toggles `useWishlistStore` with the `Product → WishlistItem` mapping (raw `primaryImageUrl`, resolved at render); saved state is `useMounted()`-gated; `aria-pressed` + `Save {name}` / `Remove {name} from saved` labels. No toast on toggle — feedback is the heart fill + count badges (spec decision).
 
 ## Toasts
 

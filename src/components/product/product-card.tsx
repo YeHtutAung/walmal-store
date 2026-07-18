@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { formatPrice } from '@/lib/utils'
 import { resolveMinioUrl } from '@/lib/minio-url'
 import { addProductToBag } from '@/lib/add-to-bag'
+import { WishlistHeart } from '@/components/product/wishlist-heart'
 import type { Product } from '@/types/product'
 
 interface ProductCardProps {
@@ -41,6 +42,9 @@ export function ProductCard({ product, badge, children }: ProductCardProps) {
               {badge}
             </span>
           )}
+          <div className="absolute right-3 top-3 z-10">
+            <WishlistHeart product={product} />
+          </div>
           {product.primaryImageUrl ? (
             <Image
               src={resolveMinioUrl(product.primaryImageUrl)!}
