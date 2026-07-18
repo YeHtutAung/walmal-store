@@ -37,15 +37,6 @@ const SEEDED_ITEM: CartItem = {
   imageUrl:    '',
 }
 
-const SEEDED_ITEM_B: CartItem = {
-  variantId:   '20000000-0000-0000-0000-000000000002',
-  productName: 'Velocity Elite FG Boot',
-  variantName: 'WP-VELO-LE-UK9G',
-  price:       1419.99,
-  quantity:    1,
-  imageUrl:    '',
-}
-
 const TEST_ADDRESS = {
   line1: '1 Auth Street', city: 'LoginCity', postalCode: '99999', country: 'US',
 }

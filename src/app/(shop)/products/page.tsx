@@ -122,12 +122,14 @@ function ProductsContent() {
     <div>
       <div className="border-b border-border">
         <div className="container mx-auto px-4 py-6 lg:py-9">
-          <p className="label-caps text-[12px] text-[#6b6b73]">
-            <Link href="/" className="transition-colors hover:text-foreground">
-              Home
-            </Link>{' '}
-            / {heading}
-          </p>
+          <nav aria-label="Breadcrumb">
+            <p className="label-caps text-[12px] text-[#6b6b73]">
+              <Link href="/" className="transition-colors hover:text-foreground">
+                Home
+              </Link>{' '}
+              / {heading}
+            </p>
+          </nav>
           <h1 className="display-heading mt-2 text-[34px] text-foreground lg:text-[56px]">{heading}</h1>
         </div>
       </div>

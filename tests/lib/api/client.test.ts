@@ -66,9 +66,9 @@ describe('apiClient interceptors', () => {
             mockLogout()
           },
         }),
-        setState: (patch: any) => {
-          if ('token' in patch) mockToken = patch.token
-          if ('status' in patch) mockStatus = patch.status
+        setState: (patch: { token?: string | null; status?: string }) => {
+          if ('token' in patch) mockToken = patch.token ?? null
+          if ('status' in patch) mockStatus = patch.status ?? mockStatus
         },
       },
     }))

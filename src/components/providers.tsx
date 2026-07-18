@@ -44,7 +44,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
             // Unexpected cart sync error — ignore silently
           }
         }
-      } catch (e) {
+      } catch {
         // Only revert to guest if no newer auth operation (e.g. register/login)
         // has already set a different status. Prevents the catch from clobbering
         // a concurrent register() that finished while this refresh was in-flight.

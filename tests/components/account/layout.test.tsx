@@ -11,7 +11,8 @@ vi.mock('next/navigation', () => ({
 async function renderLayout(status: string) {
   vi.resetModules()
   const { useAuthStore } = await import('@/store/auth-store')
-  useAuthStore.setState({ status: status as any } as any)
+  type AuthState = ReturnType<typeof useAuthStore.getState>
+  useAuthStore.setState({ status: status as AuthState['status'] } as Partial<AuthState>)
   const AccountLayout = (await import('@/app/(account)/layout')).default
   return render(
     <AccountLayout>

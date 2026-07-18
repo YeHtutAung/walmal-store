@@ -104,7 +104,7 @@ const _createAuthStore = () => create<AuthState>()((set, get) => ({
 }))
 
 type AuthStore = ReturnType<typeof _createAuthStore>
-declare global { var __walmal_auth_store: AuthStore | undefined } // eslint-disable-line no-var
+declare global { var __walmal_auth_store: AuthStore | undefined }
 export const useAuthStore: AuthStore =
   typeof window !== 'undefined'
     ? (globalThis.__walmal_auth_store ??= _createAuthStore())

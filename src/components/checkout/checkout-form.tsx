@@ -36,6 +36,10 @@ export function CheckoutForm() {
   const isAuthenticated = authStatus === 'authenticated'
 
   useEffect(() => {
+    // Syncs the checkout mode when auth status settles (e.g. silent refresh
+    // completes mid-checkout): an authenticated user must never see the
+    // guest-vs-login choice screen. External-system sync, not derived state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isAuthenticated) setMode('authenticated')
   }, [isAuthenticated])
 

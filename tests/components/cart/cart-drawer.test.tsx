@@ -80,7 +80,7 @@ describe('CartDrawer', () => {
     const quantitySpan = screen.getByText('2')
     // The parent div of the quantity span contains the Minus and Plus buttons
     const controlsDiv = quantitySpan.parentElement!
-    const [minusBtn, plusBtn] = within(controlsDiv).getAllByRole('button')
+    const [, plusBtn] = within(controlsDiv).getAllByRole('button')
 
     await user.click(plusBtn)
 
