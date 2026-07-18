@@ -35,6 +35,14 @@ server `.env`. No container publishes a port except Caddy.
 
 ## B. Frontend images + CI delivery
 
+- **CSP fix (ship-blocker found at spec review):** `next.config.ts`
+  hardcodes `connect-src 'self' https://api.stripe.com http://localhost:8080`
+  (and dev-only `img-src http://localhost:9000` / `ws:` entries) — in prod
+  the browser calls `https://api.${WALMAL_DOMAIN}` directly and the CSP
+  would block login/cart/checkout. Make the CSP origins derive from
+  `NEXT_PUBLIC_API_URL` (known at build time) with the dev entries applied
+  only outside production builds. The local Caddy verification must
+  include a browser-driven API call to prove the CSP passes.
 - **Store Dockerfile** (walmal-store): multi-stage — `npm ci` + `next build`
   with `output: 'standalone'` (add to `next.config.ts`), runtime stage on
   `node:22-alpine` running `server.js` as non-root. Build args for the two
@@ -56,16 +64,25 @@ server `.env`. No container publishes a port except Caddy.
   "Deploy (production)" job + one smoke job** (single VPS, no staging);
   same `DEPLOY_ENABLED` gate; secrets renamed `DEPLOY_HOST` /
   `DEPLOY_USER` / `DEPLOY_SSH_KEY` (runbook updates GH secrets
-  accordingly; the old `STAGING_*` names are retired).
+  accordingly; the old `STAGING_*` names are retired). The collapsed
+  deploy job keeps `environment: production` — GitHub's optional
+  required-reviewers gate stays available without workflow changes.
+  `.env.production.example` also fixes the `.env.example` drift where
+  `STRIPE_API_KEY` should be `STRIPE_SECRET_KEY` (the real binding).
 
 ## C. Backend prod configuration
 
-- New `application-prod.yml` in walmal-app: prod CORS origins
-  (`https://shop.…`, `https://admin.…` from env), sane rate limits, no
-  seed-data assumptions beyond migrations, actuator health exposed,
-  `info.walmal.profile=prod` marker. All credentials/urls from env vars
-  (matching the existing env matrix in `docs/kb/SYSTEM.md` — extend it).
-- SMTP points at mailhog (unchanged mechanics; the sink is the demo).
+- **Extend** the existing `application-prod.yml` in walmal-app (it already
+  has prod CORS/actuator/logging): CORS origins from env
+  (`https://shop.…`, `https://admin.…`), `info.walmal.profile=prod`
+  marker. Two explicit deltas found at spec review:
+  (a) the prod compose `app` env block must supply
+  `WALMAL_PAYMENT_GATEWAY=stripe` + `STRIPE_SECRET_KEY` — the fail-closed
+  gateway stub refuses to boot without them;
+  (b) the current prod profile hardcodes `mail.smtp.auth: true` +
+  STARTTLS, which MailHog supports neither of — make mail auth/TLS
+  configurable via env so the mailhog sink works.
+  Extend the `docs/kb/SYSTEM.md` env matrix accordingly.
 - **Seeding the demo catalog**: Flyway migrations run on boot (V17 catalog
   included). Product images: run `scripts/seed-product-images.ps1`'s logic
   once against prod — port the seeder to a bash script
@@ -77,7 +94,11 @@ server `.env`. No container publishes a port except Caddy.
 
 ## D. Stripe webhook (Phase 4 backend work, walmal)
 
-- New endpoint `POST /api/v1/payment/webhook` in the payment module:
+- New endpoint `POST /api/v1/payment/webhook` **hosted in the order module**
+  (`walmal-order` api package, `PaymentWebhookController`) — no payment
+  module with a controller layer exists (the gateway is service-only in
+  walmal-infrastructure), and the webhook reconciles order payments, so the
+  order module is the architectural home:
   verifies the `Stripe-Signature` header against `STRIPE_WEBHOOK_SECRET`,
   handles `payment_intent.succeeded` / `payment_intent.payment_failed` as
   a **reconciliation log** (records the event against the order's payment
