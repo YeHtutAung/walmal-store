@@ -36,7 +36,7 @@
 ### Other routes
 - `POST /api/payment-intent` — rate-limited (10/min); calls Stripe SDK server-side; requires `STRIPE_SECRET_KEY`; returns `{ clientSecret }` or `{ error }`.
 - `GET /api/minio/[...path]` — reverse-proxies MinIO object storage; keeps MinIO URL server-side.
-- `src/app/api/v1/*` (orders, cart, inventory, product) — **inactive/legacy mock routes; not used by tests or the real app; deletion is routine cleanup that updates this file.**
+- The legacy `src/app/api/v1/*` mock routes and `src/lib/mock-db.ts` were **deleted 2026-07-18** (Phase 1 hygiene) — every catalog/order/cart call goes to the real Spring backend.
 
 ## Zustand Stores (`src/store/`)
 

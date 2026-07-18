@@ -6,6 +6,14 @@
 **ZAP Scan:** `tests/security/results/zap-frontend-report.{json,html}`
 **Tester:** Claude Code (automated code review + OWASP ZAP baseline scan)
 
+> **2026-07-18 update:** the legacy mock API routes (`src/app/api/v1/*`) and
+> `src/lib/mock-db.ts` were deleted (Phase 1 hygiene). Entries below that
+> reference mock routes (RBAC-06, API-02's pointer, API-04's mock-data note,
+> SESS-04's mock note, mitigation M1) describe controls on code that no
+> longer exists — they are retained as an audit-time record and marked N/A
+> where the control's subject was removed. The real enforcement (Spring
+> backend auth + `src/middleware.ts`) is unaffected.
+
 ---
 
 ## Summary
@@ -51,7 +59,7 @@
 | RBAC-03 | Admin endpoints reject non-admin users | PASS | No `/admin` route exists. The Spring Boot admin endpoints are not proxied through Next.js. |
 | RBAC-04 | POS-only endpoints reject non-POS users | PASS | No POS endpoints exist in this Next.js frontend. |
 | RBAC-05 | Navigation hides unauthorized links | PASS | `site-header.tsx` conditionally shows "My Account" and "Logout" only when `status === 'authenticated'`. No hidden privileged URLs found in rendered HTML. |
-| RBAC-06 | Mock API routes enforce authentication | PASS | `requireAuth()` check added to `POST/GET /api/v1/orders`, `GET /api/v1/orders/[id]`, `GET/PUT /api/v1/cart`. All return 401 without a valid `Authorization: Bearer ...` header. |
+| RBAC-06 | Mock API routes enforce authentication | N/A (was PASS) | Mock routes deleted 2026-07-18 — control subject no longer exists. Historical: `requireAuth()` returned 401 without a valid bearer header. |
 
 ---
 
