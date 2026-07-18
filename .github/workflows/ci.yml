@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  REGISTRY: ghcr.io
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -24,3 +27,81 @@ jobs:
       - run: npm run lint
       - run: npx vitest run
       - run: npm run build
+
+  # ─────────────────────────────────────────────
+  # Build & push the production image to GHCR.
+  # Runs on push only (never on PRs — no untrusted-fork image publishing).
+  # Build args fall back to localhost defaults so this job — and CI overall
+  # — stays green before the VPS/domain/vars exist; the real prod values
+  # come from repo variables once Track 1 provisioning sets them.
+  # ─────────────────────────────────────────────
+  build-and-push:
+    name: Build & Push Docker Image
+    runs-on: ubuntu-latest
+    needs: ci
+    if: github.event_name == 'push'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1' }}
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ vars.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || 'pk_test_dummy' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ─────────────────────────────────────────────
+  # Deploy the freshly-pushed image to the production VPS over SSH.
+  # Gated by the DEPLOY_ENABLED repo variable (jobs cannot read secrets in
+  # `if:`) — until Track 1 provisioning sets it, this job (and the whole
+  # deploy step) is skipped and CI stays green with zero infrastructure.
+  # ─────────────────────────────────────────────
+  deploy:
+    name: Deploy (production)
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
+    environment: production
+
+    steps:
+      - name: Deploy store via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /opt/walmal
+            docker compose -f docker-compose.prod.yml pull store
+            docker compose -f docker-compose.prod.yml up -d store

@@ -14,6 +14,26 @@
 - **The Playwright matrix does NOT run in CI** (Phase 1 spec decision): it needs the walmal JAR, five Docker services, and real Stripe test keys. It remains the local pre-merge gate — run it before merging any branch.
 - Lint baseline is **zero problems** (2026-07-18) — CI fails on any new lint finding.
 
+### Build/push/deploy pipeline (added 2026-07-19)
+
+- `build-and-push` (needs `ci`; push events only): builds the production
+  Docker image (multi-stage, `output: 'standalone'`) and pushes to GHCR as
+  `ghcr.io/<owner>/<repo>`, tagged `sha-<commit>` always and `latest` on
+  `main`. Build args (`NEXT_PUBLIC_API_URL`,
+  `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`) come from repo **variables** with
+  localhost/dummy fallbacks — the job builds and pushes successfully even
+  before any prod domain or Stripe key is configured.
+- `deploy` (needs `build-and-push`; `environment: production`): SSHes to
+  the VPS (`appleboy/ssh-action`, `DEPLOY_HOST`/`DEPLOY_USER`/
+  `DEPLOY_SSH_KEY` secrets) and runs
+  `docker compose -f docker-compose.prod.yml pull store && ... up -d store`
+  in `/opt/walmal`.
+- **Deploy is skipped by default**: it's gated on the repo variable
+  `DEPLOY_ENABLED == 'true'` (unset until the user provisions the VPS —
+  see `../walmal/docs/DEPLOYMENT.md`). Until then, `build-and-push` still
+  runs and publishes images, but nothing is deployed and CI stays green
+  with zero infrastructure required.
+
 ## E2E Tests (Playwright)
 
 - Config: `playwright.config.ts`; test dir: `tests/e2e/`; global setup: `tests/e2e/global-setup.ts`.
