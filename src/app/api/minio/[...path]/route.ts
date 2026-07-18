@@ -4,6 +4,11 @@ import http from 'node:http'
 // Server-side (runtime, not baked) — in the prod compose stack the store
 // container reaches MinIO by service name; local dev keeps localhost:9000.
 const MINIO_URL = new URL(process.env.MINIO_INTERNAL_URL ?? 'http://localhost:9000')
+if (MINIO_URL.protocol !== 'http:') {
+  // node:http below cannot speak TLS — fail loudly rather than silently
+  // downgrading an https:// value to plaintext port 80.
+  throw new Error(`MINIO_INTERNAL_URL must be http:// (got ${MINIO_URL.protocol})`)
+}
 
 export async function GET(req: NextRequest) {
   // Use req.nextUrl.pathname to preserve percent-encoding — params.path decodes it,
@@ -17,7 +22,7 @@ export async function GET(req: NextRequest) {
         port: MINIO_URL.port || 80,
         path: pathname,
         method: 'GET',
-        headers: { host: 'minio:9000' },
+        headers: { host: MINIO_URL.host },
       },
       (proxyRes) => {
         const chunks: Buffer[] = []
