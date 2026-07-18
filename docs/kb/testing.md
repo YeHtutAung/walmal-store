@@ -5,7 +5,7 @@
 - Config: `vitest.config.ts` — jsdom environment, globals enabled, `@` alias → `./src`.
 - Setup file: `tests/setup.ts`.
 - Test discovery: no explicit `include` — Vitest default pattern, with `tests/e2e/**` excluded.
-- 12 test files covering: `auth-store`, `cart-store`, `wishlist-store`, `rate-limit`, `api/client`, `api/auth`, `api/orders`, `api/products`, `api/payment-intent/route`, `account/layout`, `cart/cart-drawer`, `checkout/checkout-form`.
+- 14 test files covering: `auth-store`, `cart-store`, `wishlist-store`, `rate-limit`, `api/client`, `api/auth`, `api/orders`, `api/products`, `api/payment-intent/route`, `account/layout`, `cart/cart-drawer`, `checkout/checkout-form`, `lib/categories` (slug resolver), `lib/decorative-ratings`.
 - Run command: `npx vitest run`
 
 ## E2E Tests (Playwright)

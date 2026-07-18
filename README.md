@@ -1,6 +1,8 @@
 # walmal-store
 
-Customer storefront for the walmal e-commerce system. Next.js App Router
+Customer storefront for the walmal e-commerce system, branded **Walmal
+Sport** — a dark-theme sports store (Anton/Archivo/Public Sans type, red
+accent) selling match kits, boots and training gear. Next.js App Router
 frontend over a real Spring Boot backend — guest and registered checkout,
 Stripe test-mode payments, and a 96-test Playwright suite that runs against
 the live backend rather than mocks.
@@ -23,6 +25,11 @@ the live backend rather than mocks.
 
   ![Checkout with Stripe CardElement](docs/images/checkout.png)
 
+- **Smart add-to-bag** — listing/homepage cards add single-variant products
+  straight to the bag with a toast; multi-variant products route to the
+  detail page's variant selector.
+- **Local wishlist** — heart/Saved page backed by a `localStorage`-persisted
+  Zustand store (`walmal-wishlist`); no backend round-trips.
 - **Cart persistence + guest-cart merge** — cart state is a Zustand store
   persisted to `localStorage` (`walmal-cart`); `mergeGuestCart` reconciles
   local guest items into the server cart on silent token refresh.
@@ -83,8 +90,8 @@ The frontend security checklist is 45/45 PASS, tracked in
 npx playwright test
 ```
 
-Unit tests (Vitest, 8 files covering stores, API clients, and the rate
-limiter):
+Unit tests (Vitest, 14 files covering stores, API clients, the rate
+limiter, and pure helpers like the category-slug resolver):
 
 ```bash
 npx vitest run
