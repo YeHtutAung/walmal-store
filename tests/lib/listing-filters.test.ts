@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { deriveBrandFacets, applyFilters, sortProducts, type ListingSort } from '@/lib/listing-filters'
+import { deriveBrandFacets, applyFilters, sortProducts } from '@/lib/listing-filters'
 import type { Product } from '@/types/product'
 
 const p = (productId: string, name: string, brand?: string, lowestPrice?: number): Product =>
