@@ -22,7 +22,7 @@ export function FilterSidebar({
   const hasActiveFilters = brands.size > 0 || maxPrice != null
 
   return (
-    <aside className="hidden lg:block">
+    <aside className="hidden lg:sticky lg:top-24 lg:block">
       <div className="flex items-center justify-between">
         <h2 className="label-caps text-[12px] text-[#8a8a90]">Filters</h2>
         <button
@@ -41,6 +41,7 @@ export function FilterSidebar({
               key={brand}
               type="button"
               onClick={() => onToggleBrand(brand)}
+              aria-label={`Remove ${brand} filter`}
               className="label-caps flex items-center gap-1.5 rounded-full border border-[#26262c] bg-secondary px-3 py-1.5 text-[11px] text-[#c9c9cf]"
             >
               {brand}
@@ -51,6 +52,7 @@ export function FilterSidebar({
             <button
               type="button"
               onClick={() => onSetMaxPrice(null)}
+              aria-label="Remove max price filter"
               className="label-caps flex items-center gap-1.5 rounded-full border border-[#26262c] bg-secondary px-3 py-1.5 text-[11px] text-[#c9c9cf]"
             >
               Under ${maxPrice}
@@ -72,10 +74,10 @@ export function FilterSidebar({
                     type="checkbox"
                     checked={active}
                     onChange={() => onToggleBrand(brand)}
-                    className="sr-only"
+                    className="peer sr-only"
                   />
                   <span
-                    className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border text-[11px] leading-none text-white ${
+                    className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[5px] border text-[11px] leading-none text-white peer-focus-visible:ring-2 peer-focus-visible:ring-ring ${
                       active ? 'border-primary bg-primary' : 'border-[#3a3a42]'
                     }`}
                     aria-hidden="true"
