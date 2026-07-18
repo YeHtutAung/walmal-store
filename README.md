@@ -1,5 +1,7 @@
 # walmal-store
 
+[![CI](https://github.com/YeHtutAung/walmal-store/actions/workflows/ci.yml/badge.svg)](https://github.com/YeHtutAung/walmal-store/actions/workflows/ci.yml)
+
 Customer storefront for the walmal e-commerce system, branded **Walmal
 Sport** — a dark-theme sports store (Anton/Archivo/Public Sans type, red
 accent) selling match kits, boots and training gear. Next.js App Router
@@ -78,19 +80,22 @@ npm run dev
 
 ## Tests
 
-117 Playwright tests (39 unique tests × chromium/firefox/webkit) run against
-the real backend — no mocks. `playwright.config.ts` auto-boots the backend
-(Docker services + a test-profile Spring Boot JAR on `:8080`) and a fresh
-Next.js instance on `:3001` loaded with real Stripe test keys.
-
-The frontend security checklist is 45/45 PASS, tracked in
-[`tests/security/FRONTEND_CHECKLIST.md`](tests/security/FRONTEND_CHECKLIST.md).
+CI (GitHub Actions) runs lint, the unit suite, and a production build on
+every push and PR. The 117-test Playwright matrix (39 unique tests ×
+chromium/firefox/webkit) runs **locally as the pre-merge gate** — it needs
+the real backend stack (Docker services + a test-profile Spring Boot JAR on
+`:8080`) and real Stripe test keys, which stay out of CI by design.
+`playwright.config.ts` auto-boots everything:
 
 ```bash
 npx playwright test
 ```
 
-Unit tests (Vitest, 15 files covering stores, API clients, components, the
+The frontend security checklist is 44 PASS / 1 N/A (a mock-route control
+whose subject was deleted), tracked in
+[`tests/security/FRONTEND_CHECKLIST.md`](tests/security/FRONTEND_CHECKLIST.md).
+
+Unit tests (Vitest, 17 files covering stores, API clients, components, the
 rate limiter, and pure helpers like the category-slug resolver):
 
 ```bash

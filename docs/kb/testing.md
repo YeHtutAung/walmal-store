@@ -5,8 +5,14 @@
 - Config: `vitest.config.ts` — jsdom environment, globals enabled, `@` alias → `./src`.
 - Setup file: `tests/setup.ts`.
 - Test discovery: no explicit `include` — Vitest default pattern, with `tests/e2e/**` excluded.
-- 15 test files covering: `auth-store`, `cart-store`, `wishlist-store`, `rate-limit`, `api/client`, `api/auth`, `api/orders`, `api/products`, `api/payment-intent/route`, `account/layout`, `cart/cart-drawer`, `checkout/checkout-form`, `product/wishlist-heart`, `lib/categories` (slug resolver), `lib/decorative-ratings`.
+- 17 test files covering: `auth-store`, `cart-store`, `wishlist-store`, `rate-limit`, `api/client`, `api/auth`, `api/orders`, `api/products`, `api/payment-intent/route`, `account/layout`, `cart/cart-drawer`, `checkout/checkout-form`, `product/wishlist-heart`, `lib/categories` (slug resolver), `lib/decorative-ratings`, `lib/listing-filters`, `lib/free-delivery`.
 - Run command: `npx vitest run`
+
+## CI (GitHub Actions, added 2026-07-18)
+
+- `.github/workflows/ci.yml`: on push/PR to main — `npm ci` → lint → `npx vitest run` → `npm run build`. No secrets (dummy `NEXT_PUBLIC_*` values in the workflow env; the build tolerates a missing backend).
+- **The Playwright matrix does NOT run in CI** (Phase 1 spec decision): it needs the walmal JAR, five Docker services, and real Stripe test keys. It remains the local pre-merge gate — run it before merging any branch.
+- Lint baseline is **zero problems** (2026-07-18) — CI fails on any new lint finding.
 
 ## E2E Tests (Playwright)
 
