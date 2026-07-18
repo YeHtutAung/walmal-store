@@ -90,8 +90,8 @@ The frontend security checklist is 45/45 PASS, tracked in
 npx playwright test
 ```
 
-Unit tests (Vitest, 14 files covering stores, API clients, the rate
-limiter, and pure helpers like the category-slug resolver):
+Unit tests (Vitest, 15 files covering stores, API clients, components, the
+rate limiter, and pure helpers like the category-slug resolver):
 
 ```bash
 npx vitest run
