@@ -55,7 +55,7 @@ export function BagLineItem({ item }: { item: CartItem }) {
             >
               −
             </button>
-            <span aria-live="polite" className="w-6 text-center text-[13.5px] text-foreground">
+            <span aria-live="polite" className="min-w-6 px-0.5 text-center text-[13.5px] text-foreground">
               {item.quantity}
             </span>
             <button

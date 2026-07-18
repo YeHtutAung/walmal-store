@@ -5,6 +5,8 @@ import { useCart } from '@/hooks/use-cart'
 import { formatPrice } from '@/lib/utils'
 import { freeDeliveryProgress } from '@/lib/free-delivery'
 
+// Reads the persisted cart store — must render inside a mounted gate (the
+// cart page's useMounted branch) or server HTML can mismatch hydration.
 export function BagSummary() {
   const { subtotal, subtotalFormatted } = useCart()
   const { qualifies, remaining, pct } = freeDeliveryProgress(subtotal)

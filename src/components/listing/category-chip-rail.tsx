@@ -21,6 +21,7 @@ export function CategoryChipRail({ activeSlug }: CategoryChipRailProps) {
     <div className="flex gap-2.5 overflow-x-auto pb-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:hidden">
       <Link
         href="/products"
+        aria-current={!activeSlug ? 'page' : undefined}
         className={`label-caps flex-none rounded-[22px] px-[18px] py-2.5 text-[12.5px] ${
           !activeSlug ? 'bg-primary text-white' : 'border border-[#26262c] bg-secondary text-[#c9c9cf]'
         }`}
@@ -31,6 +32,7 @@ export function CategoryChipRail({ activeSlug }: CategoryChipRailProps) {
         <Link
           key={cat.slug}
           href={`/products?category=${cat.slug}`}
+          aria-current={activeSlug === cat.slug ? 'page' : undefined}
           className={`label-caps flex-none rounded-[22px] px-[18px] py-2.5 text-[12.5px] ${
             activeSlug === cat.slug
               ? 'bg-primary text-white'

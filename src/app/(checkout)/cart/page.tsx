@@ -26,7 +26,7 @@ export default function CartPage() {
                 <Link href="/" className="transition-colors hover:text-foreground">
                   Home
                 </Link>{' '}
-                / Bag
+                / <span aria-current="page">Bag</span>
               </p>
             </nav>
             <h1 className="display-heading mt-2 text-[34px] text-foreground lg:text-[56px]">
