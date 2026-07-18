@@ -50,7 +50,10 @@ interface WishlistHeartProps {
 - Styling (mobile wireframe annotations, applied at all viewports):
   - `card`: 32px circle, `bg-white/[.92]`, lucide `Heart` 16px; idle
     `#c8c8c4`, saved `fill-primary text-primary`.
-  - `detail`: 44px, same circle treatment sized up (icon 20px).
+  - `detail`: 44px, same circle treatment sized up (icon 20px). Unlike the
+    card variant it sits on the page background, not over an image — add
+    `border border-border` (or a `bg-secondary` fill) so the circle reads
+    against the dark page.
 
 ### 2. Call sites
 
