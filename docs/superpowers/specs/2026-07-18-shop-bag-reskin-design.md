@@ -75,11 +75,23 @@ The concepts are richer than the backend supports. Three user decisions
 - Server-side pagination stays as is; changing filters does not refetch.
 - New pure module `src/lib/listing-filters.ts` (TDD):
   - `deriveBrandFacets(products) → { brand, count }[]` (sorted by count
-    desc, then name)
+    desc, then name). Products with `brand === undefined` are excluded
+    from the facet list.
   - `applyFilters(products, { brands: Set<string>, maxPrice: number | null })`
+    — empty `brands` set = no brand filtering; with an active brand set, a
+    product with `brand === undefined` is filtered OUT; with an active
+    `maxPrice`, a product with `lowestPrice == null` is filtered OUT
+    (unknown price cannot be proven under the cap).
   - `sortProducts(products, sort)` — `'featured' | 'price-asc' |
     'price-desc' | 'name'`; `featured` returns the input order; missing
-    `lowestPrice` sorts last.
+    `lowestPrice` sorts last in both price sorts.
+- **Selector constraint:** the toolbar count must render the number and the
+  word "products" within one element's text (e.g.
+  `<span><b>{n}</b> products</span>`) so TC-E2E-003's `text=/\d+ products/`
+  keeps matching.
+- The filter empty state is desktop-motivated (mobile has no brand/price
+  UI); it can still render on mobile if a desktop-set filter survives a
+  resize — that is acceptable, do NOT invent mobile filter UI for it.
 
 ## Part B — Bag page (`/cart`)
 
