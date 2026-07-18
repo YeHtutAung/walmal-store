@@ -31,7 +31,10 @@ zero in both.
   controller → service → repository path for both queries (follow the
   established pattern for optional query params in the product module; the
   JPQL gains `AND (:status IS NULL OR p.status = :status)` or the
-  repository-method equivalent).
+  repository-method equivalent). Note: the blank-`q` path uses Spring
+  Data's built-in `findAll(pageable)` (no JPQL) — that path and the
+  category-products path need repository-method equivalents, not the JPQL
+  snippet.
 - Tests per walmal conventions: service-level unit tests (param present /
   absent for both endpoints) + controller test for param binding. The
   suite's existing tests must pass unchanged (absent-param behavior
@@ -62,9 +65,12 @@ zero in both.
   The KB already marks these "inactive/legacy … deletion is routine cleanup
   that updates this file" — remove their row from `docs/kb/architecture.md`
   in the same commit. Grep first: no remaining imports/references in `src/`
-  or `tests/` (the unit tests for api routes mock at the lib layer — verify
-  which test files exercise the mock routes and delete those tests with the
-  routes if they only test deleted code).
+  or `tests/` (verified at spec review: unit tests mock at the axios layer;
+  only URL-string mentions exist). Also sweep
+  `tests/security/FRONTEND_CHECKLIST.md`: several PASS entries anchor on
+  the mock routes (RBAC-06, the API Route Security rows, mitigation M1) —
+  mark them removed/N-A in the same commit so the checklist status stays
+  honest.
 - Delete `scripts/test-checkout.js` (obsolete manual precursor to the real
   E2E suite; 1 lint error + 2 warnings live there).
 
@@ -79,8 +85,10 @@ Current baseline: 7 errors / 8 warnings. Target: **0 / 0**.
   (`unknown` + narrowing or the real types; behavior of the tests must not
   change — they must still pass for the same reasons).
 - `checkout-form.tsx` `react-hooks/set-state-in-effect` — same documented
-  eslint-disable treatment as `products/page.tsx` (comment explaining the
-  fetch-status reset), NOT a refactor.
+  eslint-disable treatment as `products/page.tsx`, but the comment must
+  describe THIS effect's actual purpose (it syncs the guest/authenticated
+  checkout mode when `isAuthenticated` changes — it is NOT a fetch-status
+  reset). NOT a refactor.
 - Warnings: unused vars (`minusBtn`, `SEEDED_ITEM_B`, `e` in providers.tsx)
   removed; unused `eslint-disable` directives (`mock-db.ts` — deleted
   anyway — and `auth-store.ts:107`) removed.
@@ -106,7 +114,8 @@ Current baseline: 7 errors / 8 warnings. Target: **0 / 0**.
 
 - `.github/workflows/ci.yml`: same shape — `npm ci`, `npm run lint`,
   `npm run test:unit`, `npm run build` (Vite). No secrets.
-- Lint: current 15 problems (11 errors / 4 warnings) driven to **0/0** —
+- Lint: current baseline ~14 problems (10 errors / 4 warnings as of spec
+  review — take the count at execution time) driven to **0/0** —
   same rules as 2c: mechanical fixes, no behavior changes, documented
   disables only where a rule fights a legitimate pattern.
 - KB (`docs/kb/testing.md`): CI section — what runs in CI, and that the
