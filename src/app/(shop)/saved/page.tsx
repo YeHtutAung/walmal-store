@@ -5,9 +5,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Heart } from 'lucide-react'
-import { useWishlistStore } from '@/store/wishlist-store'
+import { useWishlistStore, type WishlistItem } from '@/store/wishlist-store'
 import { formatPrice } from '@/lib/utils'
 import { resolveMinioUrl } from '@/lib/minio-url'
+import { addProductToBag } from '@/lib/add-to-bag'
 
 export default function SavedPage() {
   const router = useRouter()
@@ -19,6 +20,19 @@ export default function SavedPage() {
   // behind a mounted flag to avoid a hydration mismatch / empty-state flash.
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
+
+  async function handleAddToBag(item: WishlistItem) {
+    const result = await addProductToBag({
+      productId: item.productId,
+      name: item.name,
+      slug: '',
+      brand: item.brand,
+      primaryImageUrl: item.imageUrl,
+      lowestPrice: item.price,
+      currency: item.currency,
+    })
+    if (result === 'navigate') router.push(`/products/${item.productId}`)
+  }
 
   return (
     <div className="mx-auto w-full max-w-2xl px-4 py-8">
@@ -81,10 +95,9 @@ export default function SavedPage() {
                 </div>
 
                 <div className="flex shrink-0 flex-col items-end gap-2">
-                  {/* TODO(B7): use shared addProductToBag helper (single-vs-multi-variant rule) */}
                   <button
                     type="button"
-                    onClick={() => router.push(`/products/${item.productId}`)}
+                    onClick={() => handleAddToBag(item)}
                     className="label-caps rounded-[9px] bg-primary px-4 py-[9px] text-[10.5px] text-primary-foreground transition-colors hover:bg-primary/85"
                   >
                     Add to bag
