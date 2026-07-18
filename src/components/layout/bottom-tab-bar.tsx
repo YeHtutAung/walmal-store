@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Heart, Home, ShoppingBag, Store } from 'lucide-react'
 import { useCart } from '@/hooks/use-cart'
 import { useWishlistStore } from '@/store/wishlist-store'
+import { useMounted } from '@/hooks/use-mounted'
 
 interface BottomTabBarProps {
   onOpenCart: () => void
@@ -30,8 +30,7 @@ export function BottomTabBar({ onOpenCart }: BottomTabBarProps) {
 
   // Counts come from persisted (localStorage) stores — render 0 until mounted
   // so server HTML and first client render match (hydration guard).
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const mounted = useMounted()
   const { itemCount } = useCart()
   const savedItems = useWishlistStore((s) => s.items.length)
   const cartCount = mounted ? itemCount : 0

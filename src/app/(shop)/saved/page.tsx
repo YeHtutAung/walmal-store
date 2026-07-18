@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -9,6 +8,7 @@ import { useWishlistStore, type WishlistItem } from '@/store/wishlist-store'
 import { formatPrice } from '@/lib/utils'
 import { resolveMinioUrl } from '@/lib/minio-url'
 import { addProductToBag } from '@/lib/add-to-bag'
+import { useMounted } from '@/hooks/use-mounted'
 
 export default function SavedPage() {
   const router = useRouter()
@@ -18,8 +18,7 @@ export default function SavedPage() {
   // Wishlist is persisted in localStorage — server HTML always renders the
   // pre-hydration state, so gate BOTH the list and the empty/list decision
   // behind a mounted flag to avoid a hydration mismatch / empty-state flash.
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const mounted = useMounted()
 
   async function handleAddToBag(item: WishlistItem) {
     const result = await addProductToBag({

@@ -1,10 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Heart, Search } from 'lucide-react'
 import { useWishlistStore } from '@/store/wishlist-store'
+import { useMounted } from '@/hooks/use-mounted'
 import { CartIconButton } from './cart-icon-button'
 import { CartDrawer } from '@/components/cart/cart-drawer'
 import { AnnouncementBar } from './announcement-bar'
@@ -51,8 +52,7 @@ export function SiteHeader({ onOpenCart }: SiteHeaderProps = {}) {
 
   // Wishlist count comes from a persisted (localStorage) store — render it
   // only after mount so server HTML and first client render match.
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const mounted = useMounted()
   const itemCount = useWishlistStore((s) => s.items.length)
   const wishlistCount = mounted ? itemCount : 0
 

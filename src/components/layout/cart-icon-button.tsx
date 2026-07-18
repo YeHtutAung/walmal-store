@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useCart } from '@/hooks/use-cart'
+import { useMounted } from '@/hooks/use-mounted'
 
 interface CartIconButtonProps {
   onClick?: () => void
@@ -15,8 +15,7 @@ export function CartIconButton({ onClick }: CartIconButtonProps) {
   const { itemCount } = useCart()
   // Cart count comes from a persisted (localStorage) store — render 0 until
   // mounted so server HTML and first client render match (hydration guard).
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const mounted = useMounted()
   const count = mounted ? itemCount : 0
 
   const pill = count > 0 && (

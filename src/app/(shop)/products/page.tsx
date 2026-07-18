@@ -46,8 +46,12 @@ function ProductsContent() {
     if (status === 'idle' || status === 'loading') return
 
     let cancelled = false
+    /* eslint-disable react-hooks/set-state-in-effect -- reset the fetch-status
+       flags synchronously when query params change; the fetch itself is async
+       and cancellation-guarded */
     setLoading(true)
     setError(null)
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     async function load(): Promise<{ heading: string; data: ProductListResponse }> {
       if (categorySlug) {
