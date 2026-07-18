@@ -123,9 +123,9 @@ test('TC-E2E-015 successful guest checkout with Stripe test card', async ({ page
   await expect(page).toHaveURL(/\/order-confirmation\?id=.+/, { timeout: 30_000 })
   await expect(page.getByRole('heading', { name: 'Order confirmed!' })).toBeVisible()
 
-  // TC-E2E-017: cart is cleared after successful order
+  // TC-E2E-017: cart is cleared after successful order (Bag page empty state)
   await page.goto('/cart')
-  await expect(page.getByText('Your cart is empty.')).toBeVisible()
+  await expect(page.getByText('Your bag is empty')).toBeVisible()
 })
 
 // ---------------------------------------------------------------------------

@@ -4,7 +4,7 @@ Customer storefront for the walmal e-commerce system, branded **Walmal
 Sport** — a dark-theme sports store (Anton/Archivo/Public Sans type, red
 accent) selling match kits, boots and training gear. Next.js App Router
 frontend over a real Spring Boot backend — guest and registered checkout,
-Stripe test-mode payments, and a 105-test Playwright suite that runs against
+Stripe test-mode payments, and a 117-test Playwright suite that runs against
 the live backend rather than mocks.
 
 ![Home page](docs/images/home.png)
@@ -78,7 +78,7 @@ npm run dev
 
 ## Tests
 
-105 Playwright tests (35 unique tests × chromium/firefox/webkit) run against
+117 Playwright tests (39 unique tests × chromium/firefox/webkit) run against
 the real backend — no mocks. `playwright.config.ts` auto-boots the backend
 (Docker services + a test-profile Spring Boot JAR on `:8080`) and a fresh
 Next.js instance on `:3001` loaded with real Stripe test keys.
