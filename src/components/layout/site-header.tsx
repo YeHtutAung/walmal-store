@@ -9,6 +9,7 @@ import { useMounted } from '@/hooks/use-mounted'
 import { CartIconButton } from './cart-icon-button'
 import { CartDrawer } from '@/components/cart/cart-drawer'
 import { AnnouncementBar } from './announcement-bar'
+import { DemoBanner } from './demo-banner'
 import { MobileMenu } from './mobile-menu'
 import { NAV_LINKS } from './nav-links'
 import { AuthLinks } from './auth-links'
@@ -67,6 +68,7 @@ export function SiteHeader({ onOpenCart }: SiteHeaderProps = {}) {
 
   return (
     <>
+      <DemoBanner />
       <AnnouncementBar />
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur">
         <div className="mx-auto max-w-[1360px] px-4 lg:px-8">

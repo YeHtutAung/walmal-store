@@ -51,6 +51,12 @@ export async function clearState(page: Page) {
   await page.evaluate(() => {
     localStorage.clear()
     sessionStorage.clear()
+    // Pre-seed the demo-banner dismissal so the pre-banner test suite never
+    // sees it (TC-E2E-042 owns banner coverage and skips this helper's
+    // pre-seed). Note this goto('/') renders the banner once before the
+    // seed lands — safe because every spec navigates again after
+    // beforeEach; a future spec acting directly on this page must not.
+    localStorage.setItem('walmal-demo-banner-dismissed', '1')
   })
   await page.context().clearCookies()
 }
