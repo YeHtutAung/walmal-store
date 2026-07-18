@@ -1,5 +1,9 @@
 # walmal-store — Gotchas
 
+## Admin-E2E Residue Products Are Invisible Here (since 2026-07-18)
+
+The walmal-admin E2E suite leaves deactivated `E2E Product <timestamp>` rows in the shared test DB. The storefront's catalog fetchers all pass `status=ACTIVE`, so those rows can never appear in the homepage rails, `/products`, or category listings — store E2E runs and screenshots need **no** SQL cleanup. The cleanup recipe (delete residue products + children) only matters for admin-side visuals (its product table, terminals list).
+
 ## Base64url JWT Decode (`src/store/auth-store.ts`)
 
 Spring JWTs use base64url encoding (`-` and `_`, no padding). `decodePayload()` must convert before `atob()`:

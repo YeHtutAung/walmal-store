@@ -22,6 +22,9 @@ export async function fetchProducts(query: ProductsQuery = {}): Promise<ProductL
   params.set('q', query.search ?? '')
   params.set('page', String(query.page ? query.page - 1 : 0))
   params.set('size', String(query.size ?? 20))
+  // Storefront opt-in: never show deactivated products (walmal's optional
+  // status param — absent means all statuses, which only the admin wants).
+  params.set('status', 'ACTIVE')
   const res = await apiClient.get<ApiResponse<ApiPage<Product>>>(`/product/search?${params}`)
   const page = res.data.data
   return { products: page.content, total: page.totalElements, totalPages: page.totalPages }
@@ -31,6 +34,7 @@ export async function fetchProductsByCategory(categoryId: string, query: Product
   const params = new URLSearchParams()
   params.set('page', String(query.page ? query.page - 1 : 0))
   params.set('size', String(query.size ?? 20))
+  params.set('status', 'ACTIVE')
   const res = await apiClient.get<ApiResponse<ApiPage<Product>>>(`/product/categories/${categoryId}/products?${params}`)
   const page = res.data.data
   return { products: page.content, total: page.totalElements, totalPages: page.totalPages }
@@ -48,7 +52,7 @@ export async function fetchProductVariants(productId: string): Promise<ProductVa
 
 export async function fetchProductsSSG(): Promise<ProductListResponse> {
   const base = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8080/api/v1'
-  const res = await fetch(`${base}/product/search?q=&page=0&size=20`, {
+  const res = await fetch(`${base}/product/search?q=&page=0&size=20&status=ACTIVE`, {
     next: { revalidate: 3600 },
     headers: { 'Content-Type': 'application/json' },
   })
