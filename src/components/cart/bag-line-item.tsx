@@ -39,23 +39,29 @@ export function BagLineItem({ item }: { item: CartItem }) {
         </div>
 
         <div className="mt-2 flex items-center gap-4">
-          <div className="flex items-center rounded-[9px] border border-[#26262c] bg-card">
+          <div
+            role="group"
+            aria-label={`Quantity, ${item.productName}`}
+            className="flex items-center rounded-[9px] border border-[#26262c] bg-card"
+          >
             <button
               type="button"
               onClick={() => {
                 if (item.quantity > 1) updateQty(item.variantId, item.quantity - 1)
               }}
               disabled={item.quantity <= 1}
-              aria-label="Decrease quantity"
+              aria-label={`Decrease quantity, ${item.productName}`}
               className="flex h-8 w-8 items-center justify-center text-foreground transition-colors hover:text-primary disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:text-foreground lg:h-[38px] lg:w-[38px]"
             >
               −
             </button>
-            <span className="w-6 text-center text-[13.5px] text-foreground">{item.quantity}</span>
+            <span aria-live="polite" className="w-6 text-center text-[13.5px] text-foreground">
+              {item.quantity}
+            </span>
             <button
               type="button"
               onClick={() => updateQty(item.variantId, item.quantity + 1)}
-              aria-label="Increase quantity"
+              aria-label={`Increase quantity, ${item.productName}`}
               className="flex h-8 w-8 items-center justify-center text-foreground transition-colors hover:text-primary lg:h-[38px] lg:w-[38px]"
             >
               +
@@ -64,6 +70,7 @@ export function BagLineItem({ item }: { item: CartItem }) {
           <button
             type="button"
             onClick={() => removeItem(item.variantId)}
+            aria-label={`Remove ${item.productName}`}
             className="text-[12px] text-[#6b6b73] underline transition-colors hover:text-foreground"
           >
             Remove

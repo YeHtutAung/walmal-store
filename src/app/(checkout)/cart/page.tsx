@@ -63,7 +63,7 @@ export default function CartPage() {
                   href="/products"
                   className="mt-6 inline-block text-[13px] text-[#8a8a90] transition-colors hover:text-foreground"
                 >
-                  ← Continue shopping
+                  <span aria-hidden="true">←</span> Continue shopping
                 </Link>
               </div>
               <div>

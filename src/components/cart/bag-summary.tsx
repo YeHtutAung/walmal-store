@@ -25,7 +25,8 @@ export function BagSummary() {
         </div>
       ) : (
         <div className="mt-3">
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#26262c]">
+          {/* Decorative — the caption below carries the same information. */}
+          <div aria-hidden="true" className="h-1.5 w-full overflow-hidden rounded-full bg-[#26262c]">
             <div
               className="h-full rounded-full bg-primary transition-[width]"
               style={{ width: `${pct}%` }}
@@ -50,7 +51,7 @@ export function BagSummary() {
         href="/checkout"
         className="label-caps mt-5 flex h-14 w-full items-center justify-center rounded-xl bg-primary text-[13px] text-primary-foreground transition-colors hover:bg-primary/85"
       >
-        Checkout →
+        Checkout <span aria-hidden="true">→</span>
       </Link>
 
       <p className="mt-4 flex items-center justify-center gap-1.5 text-[11.5px] text-[#8a8a90]">

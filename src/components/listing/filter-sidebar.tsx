@@ -22,7 +22,9 @@ export function FilterSidebar({
   const hasActiveFilters = brands.size > 0 || maxPrice != null
 
   return (
-    <aside className="hidden lg:sticky lg:top-24 lg:block">
+    // self-start: as a grid item the aside would otherwise stretch to full row
+    // height (grid default align-items: stretch), making sticky a silent no-op.
+    <aside className="hidden self-start lg:sticky lg:top-24 lg:block">
       <div className="flex items-center justify-between">
         <h2 className="label-caps text-[12px] text-[#8a8a90]">Filters</h2>
         <button
