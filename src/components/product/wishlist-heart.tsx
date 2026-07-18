@@ -46,7 +46,7 @@ export function WishlistHeart({ product, size = 'card' }: WishlistHeartProps) {
       onClick={handleClick}
       aria-pressed={saved}
       aria-label={saved ? `Remove ${product.name} from saved` : `Save ${product.name}`}
-      className={`flex items-center justify-center rounded-full ${shell}`}
+      className={`flex items-center justify-center rounded-full transition-colors ${shell}`}
     >
       <Heart
         className={`transition-colors ${icon} ${saved ? 'fill-primary text-primary' : 'text-[#c8c8c4]'}`}
