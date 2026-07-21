@@ -17,7 +17,7 @@ export function Hero({ content }: { content?: HomeContent['hero'] }) {
       <section className="relative h-[460px] overflow-hidden bg-[#111114] lg:h-[600px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={resolveMinioUrl(content.imageUrl) ?? ''}
+          src={resolveMinioUrl(content.imageUrl) || '/sport/hero.svg'}
           alt=""
           aria-hidden
           className="absolute inset-0 h-full w-full object-cover"

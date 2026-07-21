@@ -20,14 +20,16 @@ export function CategoryTiles({ tiles }: { tiles?: HomeContent['categoryTiles'] 
     <section className="mx-auto max-w-[1360px]">
       {/* Desktop: 4-up image tiles */}
       <div className="hidden gap-4 px-8 pb-2 pt-7 lg:grid lg:grid-cols-4">
-        {cats.map((cat) => (
+        {cats.map((cat) => {
+          const imgSrc = resolveMinioUrl(cat.img)
+          return (
           <Link
             key={cat.href}
             href={cat.href}
             className="group relative h-[230px] overflow-hidden rounded-[14px] bg-secondary"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={resolveMinioUrl(cat.img) ?? ''} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+            {imgSrc && <img src={imgSrc} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />}
             <div
               className="absolute inset-0"
               style={{ background: 'linear-gradient(180deg, rgba(10,10,12,.05), rgba(10,10,12,.82))' }}
@@ -37,7 +39,8 @@ export function CategoryTiles({ tiles }: { tiles?: HomeContent['categoryTiles'] 
               <p className="label-caps mt-[5px] text-xs font-bold text-primary">Shop now →</p>
             </div>
           </Link>
-        ))}
+          )
+        })}
       </div>
       {/* Mobile: horizontal chip rail */}
       <div className="flex gap-2.5 overflow-x-auto px-4 pb-1.5 pt-[18px] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:hidden">

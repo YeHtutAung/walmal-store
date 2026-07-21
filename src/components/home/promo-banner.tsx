@@ -18,7 +18,7 @@ export function PromoBanner({ content }: { content?: HomeContent['promo'] }) {
         <div className="relative h-[300px] overflow-hidden rounded-2xl bg-card lg:h-[340px] lg:rounded-[18px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={resolveMinioUrl(content.imageUrl) ?? ''}
+            src={resolveMinioUrl(content.imageUrl) || '/sport/promo-pack.svg'}
             alt=""
             aria-hidden
             className="absolute inset-0 h-full w-full object-cover"
