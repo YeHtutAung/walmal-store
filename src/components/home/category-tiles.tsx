@@ -1,27 +1,33 @@
 import Link from 'next/link'
+import type { HomeContent } from '@/lib/api/home-content'
+import { resolveMinioUrl } from '@/lib/minio-url'
 
 // Slugs are coupled to the V17 seeded taxonomy (see docs/kb) — boots/jerseys/
 // teamwear/equipment are the four active roots.
-const CATEGORIES = [
-  { name: 'Jerseys', slug: 'jerseys', img: '/sport/cat-jerseys.svg' },
-  { name: 'Boots', slug: 'boots', img: '/sport/cat-boots.svg' },
-  { name: 'Teamwear', slug: 'teamwear', img: '/sport/cat-teamwear.svg' },
-  { name: 'Equipment', slug: 'equipment', img: '/sport/cat-equipment.svg' },
+const STATIC_CATEGORIES = [
+  { name: 'Jerseys', href: '/products?category=jerseys', img: '/sport/cat-jerseys.svg' },
+  { name: 'Boots', href: '/products?category=boots', img: '/sport/cat-boots.svg' },
+  { name: 'Teamwear', href: '/products?category=teamwear', img: '/sport/cat-teamwear.svg' },
+  { name: 'Equipment', href: '/products?category=equipment', img: '/sport/cat-equipment.svg' },
 ]
 
-export function CategoryTiles() {
+export function CategoryTiles({ tiles }: { tiles?: HomeContent['categoryTiles'] }) {
+  const cats = tiles?.length
+    ? tiles.map((t) => ({ name: t.label, href: t.href, img: t.imageUrl }))
+    : STATIC_CATEGORIES
+
   return (
     <section className="mx-auto max-w-[1360px]">
       {/* Desktop: 4-up image tiles */}
       <div className="hidden gap-4 px-8 pb-2 pt-7 lg:grid lg:grid-cols-4">
-        {CATEGORIES.map((cat) => (
+        {cats.map((cat) => (
           <Link
-            key={cat.slug}
-            href={`/products?category=${cat.slug}`}
+            key={cat.href}
+            href={cat.href}
             className="group relative h-[230px] overflow-hidden rounded-[14px] bg-secondary"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={cat.img} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
+            <img src={resolveMinioUrl(cat.img) ?? ''} alt="" aria-hidden className="absolute inset-0 h-full w-full object-cover" />
             <div
               className="absolute inset-0"
               style={{ background: 'linear-gradient(180deg, rgba(10,10,12,.05), rgba(10,10,12,.82))' }}
@@ -41,10 +47,10 @@ export function CategoryTiles() {
         >
           All
         </Link>
-        {CATEGORIES.map((cat) => (
+        {cats.map((cat) => (
           <Link
-            key={cat.slug}
-            href={`/products?category=${cat.slug}`}
+            key={cat.href}
+            href={cat.href}
             className="label-caps flex-none rounded-[22px] border border-[#26262c] bg-secondary px-[18px] py-2.5 text-[12.5px] text-[#c9c9cf]"
           >
             {cat.name}
